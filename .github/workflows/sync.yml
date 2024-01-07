@@ -15,4 +15,4 @@ jobs:
           source_repo: https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           source_branch: main
           destination_repo: ${{ secrets.GLITCH_GIT_URL }}
-          destination_branch: master
+          destination_branch: main
