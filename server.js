@@ -13,7 +13,7 @@ const fastify = require("fastify")({
 
 fastify.register(require('@fastify/websocket'));
 fastify.register(async function (fastify) {
-  fastify.get('/', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
+  fastify.get('/ws', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
     connection.socket.on('message', message => {
       // message.toString() === 'hi from client'
       console.log('Message received');
