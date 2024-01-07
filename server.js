@@ -11,6 +11,17 @@ const fastify = require("fastify")({
   logger: false,
 });
 
+fastify.register(require('@fastify/websocket'));
+fastify.register(async function (fastify) {
+  fastify.get('/', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
+    connection.socket.on('message', message => {
+      // message.toString() === 'hi from client'
+      console.log('Message received');
+      console.log(message);
+    })
+  })
+})
+
 // ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
 
 // Setup our static files
