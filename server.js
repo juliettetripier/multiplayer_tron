@@ -24,6 +24,7 @@ fastify.register(async function (fastify) {
       console.log(message);
       console.log(state)
       state += 1;
+      connection.socket.send(state);
     })
   })
 })
