@@ -2,7 +2,7 @@ console.log('Hello world');
 
 const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
 
-const ui = document.querySelector('ui');
+const ui = document.querySelector('#ui');
 
 ws.addEventListener('message', (event) => {
     ui.innerText = event.data;
