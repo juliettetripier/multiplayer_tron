@@ -16,8 +16,8 @@ let state = 0;
 
 fastify.register(require('@fastify/websocket'));
 fastify.register(async function (fastify) {
+  const server = this.websocketServer;
   fastify.get('/wss', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
-    const server = this.websocketServer;
     connection.socket.send(state);
     connection.socket.on('message', message => {
       // message.toString() === 'hi from client'
