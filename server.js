@@ -17,6 +17,7 @@ let state = 0;
 fastify.register(require('@fastify/websocket'));
 fastify.register(async function (fastify) {
   fastify.get('/wss', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
+    const server = this.websocketServer;
     connection.socket.send(state);
     connection.socket.on('message', message => {
       // message.toString() === 'hi from client'
@@ -24,7 +25,11 @@ fastify.register(async function (fastify) {
       console.log(message);
       console.log(state)
       state += 1;
-      connection.socket.send(state);
+      const clients = server.clients;
+      clients.forEach((client) => {
+        client.socket.send(state);
+      })
+      // connection.socket.send(state);
     })
   })
 })
