@@ -1,6 +1,6 @@
 console.log('Hello world');
 
-const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me:3000/wss')
+const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss')
 
 // ws.addEventListener('message', )
 
