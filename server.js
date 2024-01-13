@@ -22,6 +22,7 @@ fastify.register(async function (fastify) {
       // message.toString() === 'hi from client'
       console.log('Message received');
       console.log(message);
+      console.log(state)
       state += 1;
     })
   })
