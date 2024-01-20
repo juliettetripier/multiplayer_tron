@@ -199,3 +199,11 @@ label {
 h2 {
   color: #2800FF;
 }
+
+/* My CSS */
+
+.background {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
