@@ -45,8 +45,8 @@ class Local {
         this.ctx.clearRect(0, 0, 400, 400);
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
-        window.setTimeout(() => this.tick(), (1000/60));
-        // window.requestAnimationFrame(this.tick());
+        // window.setTimeout(() => this.tick(), (1000/60));
+        window.requestAnimationFrame(() => this.tick());
     }
 
     gameLoop() {
@@ -118,7 +118,6 @@ class Player {
         ctx.lineWidth = 10;
         ctx.stroke();
         ctx.closePath();
-        
     }
 }
 
