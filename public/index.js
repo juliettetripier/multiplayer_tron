@@ -7,13 +7,6 @@ class Client {
         ws.addEventListener('message', (event) => {
             ui.innerText = event.data;
         })
-
-        document.addEventListener('keydown', function(event) {
-            if (event.key == 'ArrowUp') {
-                console.log('Up arrow pressed');
-                ws.send('message');
-            } 
-        })
     }
 
 
@@ -25,13 +18,23 @@ class Local {
         this.initializeGame();
     }
 
+    installEventHandlers() {
+        document.addEventListener('keydown', (event) => {
+            if (event.key == 'ArrowUp') {
+                this.mainPlayer.processCommand('turnUp');
+            } 
+        })
+    }
+
     initializeGame() {
         this.canvas = document.querySelector('#main-canvas');
         this.ctx = this.canvas.getContext('2d');
         const background = new Background();
         this.addEntity(background);
         const player = new Player();
+        this.mainPlayer = player;
         this.addEntity(player);
+        this.installEventHandlers();
         this.gameLoop();
         console.log('Game loop started');
     }
@@ -70,7 +73,7 @@ class Player {
     constructor() {
         this.playerLocation = {
             x: 20,
-            y: 20
+            y: 200
         };
         this.initialPlayerPos = {...this.playerLocation};
         this.playerDirection = 'right';
@@ -80,14 +83,12 @@ class Player {
     }
 
     update() {
-        console.log(this.lastUpdated);
         let delta = 0;
         if (this.lastUpdated != null) {
             delta = Date.now() - this.lastUpdated;
         }
         let deltaSeconds = delta / 1000;
         this.lastUpdated = Date.now();
-        console.log(this.lastUpdated);
         
         switch (this.playerDirection) {
             case 'right':
@@ -118,6 +119,14 @@ class Player {
         ctx.lineWidth = 10;
         ctx.stroke();
         ctx.closePath();
+    }
+
+    processCommand(command) {
+        switch(command) {
+            case 'turnUp':
+                this.playerDirection = 'up';
+                this.turnHistory.push('up');
+        }
     }
 }
 
