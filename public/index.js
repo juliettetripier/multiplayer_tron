@@ -45,7 +45,7 @@ class Local {
         this.ctx.clearRect(0, 0, 400, 400);
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
-        // window.setTimeout(() => this.tick(), (1000/60));
+        window.setTimeout(() => this.tick(), (1000/60));
         // window.requestAnimationFrame(this.tick());
     }
 
@@ -73,28 +73,33 @@ class Player {
             y: 20
         };
         this.playerDirection = 'right';
-        this.playerSpeed = 5;
+        this.playerSpeed = 300;
         this.turnHistory = [];
         this.lastUpdated = null;
     }
 
     update() {
         console.log(this.lastUpdated);
+        let delta = 0;
+        if (this.lastUpdated != null) {
+            delta = Date.now() - this.lastUpdated;
+        }
+        let deltaSeconds = delta / 1000;
         this.lastUpdated = Date.now();
         console.log(this.lastUpdated);
         
         switch (this.playerDirection) {
             case 'right':
-                this.playerLocation.x += this.playerSpeed;
+                this.playerLocation.x += this.playerSpeed * deltaSeconds ;
                 break;
             case 'left':
-                this.playerLocation.x -= this.playerSpeed;
+                this.playerLocation.x -= this.playerSpeed * deltaSeconds;
                 break;
             case 'up':
-                this.playerLocation.y -= this.playerSpeed;
+                this.playerLocation.y -= this.playerSpeed * deltaSeconds;
                 break;
             case 'down':
-                this.playerLocation.y += this.playerSpeed;
+                this.playerLocation.y += this.playerSpeed * deltaSeconds;
                 break;
             default:
                 throw new Error('Invalid direction');
