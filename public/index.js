@@ -72,6 +72,7 @@ class Player {
             x: 20,
             y: 20
         };
+        this.initialPlayerPos = {...this.playerLocation};
         this.playerDirection = 'right';
         this.playerSpeed = 300;
         this.turnHistory = [];
@@ -111,7 +112,13 @@ class Player {
         ctx.arc(this.playerLocation.x, this.playerLocation.y, 10, 0, Math.PI * 2);
         ctx.fillStyle = 'yellow';
         ctx.fill();
+        ctx.moveTo(this.playerLocation.x, this.playerLocation.y);
+        ctx.lineTo(this.initialPlayerPos.x, this.initialPlayerPos.y);
+        ctx.strokeStyle = 'yellow';
+        ctx.lineWidth = 10;
+        ctx.stroke();
         ctx.closePath();
+        
     }
 }
 
