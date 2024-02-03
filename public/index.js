@@ -32,7 +32,8 @@ class Local {
         this.addEntity(background);
         const player = new Player();
         this.addEntity(player);
-        this.tick();
+        this.gameLoop();
+        console.log('Game loop started');
     }
 
     addEntity(entity) {
@@ -40,9 +41,16 @@ class Local {
     }
 
     tick() {
+        console.log("Tick is being called")
         this.ctx.clearRect(0, 0, 400, 400);
-        this.entities.forEach((entity) => entity.update())
+        this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
+        // window.setTimeout(() => this.tick(), (1000/60));
+        // window.requestAnimationFrame(this.tick());
+    }
+
+    gameLoop() {
+        this.tick();
     }
 }
 
@@ -64,6 +72,8 @@ class Player {
             x: 20,
             y: 20
         };
+        this.playerDirection = 'right';
+        this.playerSpeed = 5;
         this.turnHistory = [];
         this.lastUpdated = null;
     }
@@ -72,6 +82,23 @@ class Player {
         console.log(this.lastUpdated);
         this.lastUpdated = Date.now();
         console.log(this.lastUpdated);
+        
+        switch (this.playerDirection) {
+            case 'right':
+                this.playerLocation.x += this.playerSpeed;
+                break;
+            case 'left':
+                this.playerLocation.x -= this.playerSpeed;
+                break;
+            case 'up':
+                this.playerLocation.y -= this.playerSpeed;
+                break;
+            case 'down':
+                this.playerLocation.y += this.playerSpeed;
+                break;
+            default:
+                throw new Error('Invalid direction');
+        }
     }
 
     draw(ctx) {
