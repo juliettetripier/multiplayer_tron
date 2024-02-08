@@ -23,6 +23,15 @@ class Local {
             if (event.key == 'ArrowUp') {
                 this.mainPlayer.processCommand('turnUp');
             } 
+            else if (event.key == 'ArrowDown') {
+                this.mainPlayer.processCommand('turnDown');
+            }
+            else if (event.key == 'ArrowLeft') {
+                this.mainPlayer.processCommand('turnLeft');
+            }
+            else if (event.key == 'ArrowRight') {
+                this.mainPlayer.processCommand('turnRight');
+            }
         })
     }
 
@@ -92,7 +101,7 @@ class Player {
         
         switch (this.playerDirection) {
             case 'right':
-                this.playerLocation.x += this.playerSpeed * deltaSeconds ;
+                this.playerLocation.x += this.playerSpeed * deltaSeconds;
                 break;
             case 'left':
                 this.playerLocation.x -= this.playerSpeed * deltaSeconds;
@@ -126,6 +135,21 @@ class Player {
             case 'turnUp':
                 this.playerDirection = 'up';
                 this.turnHistory.push('up');
+                break;
+            case 'turnDown':
+                this.playerDirection = 'down';
+                this.turnHistory.push('down');
+                break;
+            case 'turnLeft':
+                this.playerDirection = 'left';
+                this.turnHistory.push('left');
+                break;
+            case 'turnRight':
+                this.playerDirection = 'right';
+                this.turnHistory.push('right');
+                break;
+            default:
+                throw new Error('Invalid direction uh oh');
         }
     }
 }
