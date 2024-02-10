@@ -6,8 +6,6 @@ class Client {
             ui.innerText = event.data;
         })
     }
-
-
 }
 
 class Local {
@@ -118,12 +116,24 @@ class Player {
         ctx.arc(this.playerLocation.x, this.playerLocation.y, 10, 0, Math.PI * 2);
         ctx.fillStyle = 'yellow';
         ctx.fill();
-        ctx.moveTo(this.playerLocation.x, this.playerLocation.y);
-        ctx.lineTo(this.initialPlayerPos.x, this.initialPlayerPos.y);
+        // ctx.moveTo(this.playerLocation.x, this.playerLocation.y);
+        // ctx.lineTo(this.initialPlayerPos.x, this.initialPlayerPos.y);
+        // ctx.strokeStyle = 'yellow';
+        // ctx.lineWidth = 10;
+        // ctx.stroke();
+        this.drawTrail(ctx);
+        ctx.closePath();
+    }
+
+    drawTrail(ctx) {
+        ctx.moveTo(this.initialPlayerPos.x, this.initialPlayerPos.y);
+        this.turnHistory.forEach((turn) => {
+            ctx.lineTo(turn.location.x, turn.location.y);
+        })
+        ctx.lineTo(this.playerLocation.x, this.playerLocation.y);
         ctx.strokeStyle = 'yellow';
         ctx.lineWidth = 10;
         ctx.stroke();
-        ctx.closePath();
     }
 
     registerTurn() {
