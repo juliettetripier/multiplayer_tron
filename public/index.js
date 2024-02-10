@@ -1,5 +1,3 @@
-console.log('Hello world');
-
 class Client {
     constructor() {
         const ui = document.querySelector('#ui');
@@ -45,7 +43,6 @@ class Local {
         this.addEntity(player);
         this.installEventHandlers();
         this.gameLoop();
-        console.log('Game loop started');
     }
 
     addEntity(entity) {
@@ -53,7 +50,6 @@ class Local {
     }
 
     tick() {
-        console.log("Tick is being called")
         this.ctx.clearRect(0, 0, 400, 400);
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
@@ -130,23 +126,32 @@ class Player {
         ctx.closePath();
     }
 
+    registerTurn() {
+        const currentLocation = {...this.playerLocation};
+        const newTurn = {
+            direction: this.playerDirection,
+            location: currentLocation
+        };
+        this.turnHistory.push(newTurn);
+    }
+
     processCommand(command) {
         switch(command) {
             case 'turnUp':
                 this.playerDirection = 'up';
-                this.turnHistory.push('up');
+                this.registerTurn();
                 break;
             case 'turnDown':
                 this.playerDirection = 'down';
-                this.turnHistory.push('down');
+                this.registerTurn();
                 break;
             case 'turnLeft':
                 this.playerDirection = 'left';
-                this.turnHistory.push('left');
+                this.registerTurn();
                 break;
             case 'turnRight':
                 this.playerDirection = 'right';
-                this.turnHistory.push('right');
+                this.registerTurn();
                 break;
             default:
                 throw new Error('Invalid direction uh oh');
