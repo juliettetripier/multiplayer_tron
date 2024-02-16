@@ -144,9 +144,19 @@ class Player {
 
     checkCollisions() {
         const currentLocation = {...this.playerLocation};
-        if (currentLocation.x < 0 || currentLocation.x > 400
-            || currentLocation.y < 0 || currentLocation.y > 400) {
-            console.log('Collision')};
+        // if (currentLocation.x <= 0 || currentLocation.x >= 400
+        //     || currentLocation.y <= 0 || currentLocation.y >= 400) {
+        //     console.log('Collision')};
+
+        // Bug - collisions on the X axis being detected on
+        // page load - but not when I refresh quickly?
+
+        if (currentLocation.x <= 0 || currentLocation.x >= 400) {
+            console.log('Collision X')
+        };
+        if (currentLocation.y <= 0 || currentLocation.y >= 400) {
+            console.log('Collision Y')
+        };
     }
 
     processCommand(command) {
