@@ -51,7 +51,7 @@ class Local {
         this.ctx.clearRect(0, 0, 400, 400);
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
-        // window.setTimeout(() => this.tick(), (1000/60));
+        // this.entities.forEach((entity) => entity.checkCollisions());
         window.requestAnimationFrame(() => this.tick());
     }
 
@@ -109,6 +109,8 @@ class Player {
             default:
                 throw new Error('Invalid direction');
         }
+
+        this.checkCollisions();
     }
 
     draw(ctx) {
@@ -116,11 +118,6 @@ class Player {
         ctx.arc(this.playerLocation.x, this.playerLocation.y, 10, 0, Math.PI * 2);
         ctx.fillStyle = 'yellow';
         ctx.fill();
-        // ctx.moveTo(this.playerLocation.x, this.playerLocation.y);
-        // ctx.lineTo(this.initialPlayerPos.x, this.initialPlayerPos.y);
-        // ctx.strokeStyle = 'yellow';
-        // ctx.lineWidth = 10;
-        // ctx.stroke();
         this.drawTrail(ctx);
         ctx.closePath();
     }
@@ -143,6 +140,13 @@ class Player {
             location: currentLocation
         };
         this.turnHistory.push(newTurn);
+    }
+
+    checkCollisions() {
+        const currentLocation = {...this.playerLocation};
+        if (currentLocation.x < 0 || currentLocation.x > 400
+            || currentLocation.y < 0 || currentLocation.y > 400) {
+            console.log('Collision')};
     }
 
     processCommand(command) {
