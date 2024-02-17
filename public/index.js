@@ -16,8 +16,8 @@ class Client {
 class Local {
     constructor() {
         this.entities = [];
-        this.initializeGame();
         this.currentState = GAMESTATES.gameActive;
+        this.initializeGame();
     }
 
     installEventHandlers() {
@@ -34,7 +34,8 @@ class Local {
             else if (event.key == 'ArrowRight') {
                 this.mainPlayer.processCommand('turnRight');
             }
-        })
+        });
+        this.mainPlayer.addEventListener('collision', () => this.loseGame());
     }
 
     initializeGame() {
@@ -58,17 +59,22 @@ class Local {
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
         // this.entities.forEach((entity) => entity.checkCollisions());
-        window.requestAnimationFrame(() => this.tick());
+        window.requestAnimationFrame(() => this.gameLoop());
+    }
+
+    loseGame() {
+        this.currentState = GAMESTATES.gameOver;
+        console.log(this.currentState);
     }
 
     endGame() {
-        
+
     }
 
     gameLoop() {
         const gameState = {
-            [GAMESTATE.gameActive]: this.tick,
-            [GAMESTATE.gameOver]: this.endGame
+            [GAMESTATES.gameActive]: () => this.tick(),
+            [GAMESTATES.gameOver]: () => this.endGame()
         };
         (gameState[this.currentState])();
     }
@@ -86,8 +92,9 @@ class Background {
     update() {}
 }
 
-class Player {
+class Player extends EventTarget {
     constructor() {
+        super();
         this.playerLocation = {
             x: 20,
             y: 200
@@ -158,18 +165,9 @@ class Player {
 
     checkCollisions() {
         const currentLocation = {...this.playerLocation};
-        // if (currentLocation.x <= 0 || currentLocation.x >= 400
-        //     || currentLocation.y <= 0 || currentLocation.y >= 400) {
-        //     console.log('Collision')};
-
-        // Bug - collisions on the X axis being detected on
-        // page load - but not when I refresh quickly?
-
-        if (currentLocation.x <= 0 || currentLocation.x >= 400) {
-            console.log('Collision X')
-        };
-        if (currentLocation.y <= 0 || currentLocation.y >= 400) {
-            console.log('Collision Y')
+        if (currentLocation.x <= 0 || currentLocation.x >= 400
+            || currentLocation.y <= 0 || currentLocation.y >= 400) {
+                this.dispatchEvent(new Event('collision'));
         };
     }
 
