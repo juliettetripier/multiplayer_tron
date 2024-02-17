@@ -1,3 +1,8 @@
+const GAMESTATES = {
+    gameActive: 'gameActive',
+    gameOver: 'gameOver'
+};
+
 class Client {
     constructor() {
         const ui = document.querySelector('#ui');
@@ -12,6 +17,7 @@ class Local {
     constructor() {
         this.entities = [];
         this.initializeGame();
+        this.currentState = GAMESTATES.gameActive;
     }
 
     installEventHandlers() {
@@ -55,8 +61,16 @@ class Local {
         window.requestAnimationFrame(() => this.tick());
     }
 
+    endGame() {
+        
+    }
+
     gameLoop() {
-        this.tick();
+        const gameState = {
+            [GAMESTATE.gameActive]: this.tick,
+            [GAMESTATE.gameOver]: this.endGame
+        };
+        (gameState[this.currentState])();
     }
 }
 
