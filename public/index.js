@@ -3,6 +3,11 @@ const GAMESTATES = {
     gameOver: 'gameOver'
 };
 
+const ARENASIZES = {
+    width: 600,
+    height: 600
+};
+
 class Client {
     constructor() {
         const ui = document.querySelector('#ui');
@@ -40,6 +45,8 @@ class Local {
 
     initializeGame() {
         this.canvas = document.querySelector('#main-canvas');
+        this.canvas.setAttribute('width', ARENASIZES.width);
+        this.canvas.setAttribute('height', ARENASIZES.height);
         this.ctx = this.canvas.getContext('2d');
         const background = new Background();
         this.addEntity(background);
@@ -55,10 +62,9 @@ class Local {
     }
 
     tick() {
-        this.ctx.clearRect(0, 0, 400, 400);
+        this.ctx.clearRect(0, 0, ARENASIZES.width, ARENASIZES.height);
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
-        // this.entities.forEach((entity) => entity.checkCollisions());
         window.requestAnimationFrame(() => this.gameLoop());
     }
 
@@ -83,7 +89,7 @@ class Local {
 class Background {
     draw(ctx) {
         ctx.beginPath();
-        ctx.rect(0,0,400,400);
+        ctx.rect(0,0,ARENASIZES.width,ARENASIZES.height);
         ctx.fillStyle = 'indigo';
         ctx.fill();
         ctx.closePath();
@@ -165,8 +171,8 @@ class Player extends EventTarget {
 
     checkCollisions() {
         const currentLocation = {...this.playerLocation};
-        if (currentLocation.x <= 0 || currentLocation.x >= 400
-            || currentLocation.y <= 0 || currentLocation.y >= 400) {
+        if (currentLocation.x <= 0 || currentLocation.x >= ARENASIZES.width
+            || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
         };
     }
