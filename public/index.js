@@ -138,6 +138,7 @@ class Player extends EventTarget {
         }
 
         this.checkCollisions();
+        this.categorizeTurns();
     }
 
     draw(ctx) {
@@ -167,6 +168,45 @@ class Player extends EventTarget {
             location: currentLocation
         };
         this.turnHistory.push(newTurn);
+    }
+
+    categorizeTurns() {
+        const linesByOrientation = {'horizontal': [],
+            'vertical': []};
+
+        let startPoint = this.initialPlayerPos;
+
+        const currentPosition = {...this.playerLocation};
+
+        if (this.turnHistory.length === 0) {
+            return linesByOrientation;
+        }
+
+        this.turnHistory.forEach((turn) => {
+            if (turn.direction === 'right' || turn.direction === 'left') {
+                linesByOrientation['horizontal'].push({'start': startPoint,
+                    'end': turn.location})
+            }
+            else {
+                linesByOrientation['vertical'].push({'start': startPoint,
+                    'end': turn.location})
+            };
+            startPoint = turn.location;
+            console.log(linesByOrientation);
+        })
+
+        const lastTurn = this.turnHistory[this.turnHistory.length - 1];
+
+        if (lastTurn.direction === 'right' || lastTurn.direction === 'left') {
+            linesByOrientation['horizontal'].push({'start': startPoint,
+                'end': currentPosition})
+        }
+        else {
+            linesByOrientation['vertical'].push({'start': startPoint, 
+                'end': currentPosition})
+        }
+        
+        return linesByOrientation;
     }
 
     checkCollisions() {
