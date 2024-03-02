@@ -8,6 +8,8 @@ const ARENASIZES = {
     height: 600
 };
 
+
+
 class Client {
     constructor() {
         const ui = document.querySelector('#ui');
@@ -138,7 +140,7 @@ class Player extends EventTarget {
         }
 
         this.checkCollisions();
-        this.categorizeTurns();
+        this.trackLines();
     }
 
     draw(ctx) {
@@ -170,11 +172,67 @@ class Player extends EventTarget {
         this.turnHistory.push(newTurn);
     }
 
-    categorizeTurns() {
+    finishLine(endpoint, startTurn) {
+        // takes in end point
+        // look at last orientation
+        // if orientation was vertical, push an object into 
+        // vertical lines with x (startpoint.x), top y(whichever is 
+        // smaller, startpoint.y or endpoint.y), bottom y
+        // if horizontal, y, left x, right x
+        let newLine = null;
+        switch(startTurn.direction) {
+            case 'up':
+            case 'down':
+                let topY = null
+                let bottomY = null
+                if (startTurn.location.y > endpoint.y) {
+                    topY = endpoint.y;
+                    bottomY = startTurn.location.y;
+                }
+                else {
+                    topY = startTurn.location.y;
+                    bottomY = endpoint.y;
+                };
+                newLine = {
+                    'x': startTurn.location.x,
+                    'top y': topY,
+                    'bottom y': bottomY
+                };
+                break;
+            case 'left':
+            case 'right':
+                let leftX = null
+                let rightX = null
+                if (startTurn.location.x > endpoint.x) {
+                    leftX = endpoint.x;
+                    rightX = startTurn.location.x;
+                }
+                else {
+                    leftX = startTurn.location.x;
+                    rightX = endpoint.x;
+                };
+                newLine = {
+                    'y': startTurn.location.y,
+                    'left x': leftX,
+                    'right x': rightX
+                };
+                console.log(`leftX = ${leftX}`);
+                console.log(`rightX = ${rightX}`);
+                break;
+            default:
+                throw new Error('Ruh roh');
+        }
+        console.log(`newLine = ${newLine}`);
+
+        return newLine;
+    }
+
+    trackLines() {
         const linesByOrientation = {'horizontal': [],
             'vertical': []};
 
         let startPoint = this.initialPlayerPos;
+        let lineOrientation = 'horizontal';
 
         const currentPosition = {...this.playerLocation};
 
@@ -182,18 +240,42 @@ class Player extends EventTarget {
             return linesByOrientation;
         }
 
-        this.turnHistory.forEach((turn) => {
+        // for each turn in turn history
+        // finish the line you were currently on
+        // using turn info, create a new start point for a new line
+
+
+
+        const startNewLine = (turn) => {
+            startPoint = turn.location;
             if (turn.direction === 'right' || turn.direction === 'left') {
-                linesByOrientation['horizontal'].push({'start': startPoint,
-                    'end': turn.location})
+                lineOrientation = 'horizontal';
             }
             else {
-                linesByOrientation['vertical'].push({'start': startPoint,
-                    'end': turn.location})
-            };
-            startPoint = turn.location;
-            console.log(linesByOrientation);
-        })
+                lineOrientation = 'vertical';
+            }
+        }
+
+        // in our turnHistory for each turn:
+        // ends current line
+        // starts new line based on current turn
+        // outside for each loop
+        // end current line again based on current player position
+
+        // this.turnHistory.forEach((turn) => {
+        //     if (turn.direction === 'right' || turn.direction === 'left') {
+        //         linesByOrientation[lineOrientation].push({'start': startPoint,
+        //             'end': turn.location, 'y': startPoint.y});
+        //         lineOrientation = 'horizontal';
+        //     }
+        //     else {
+        //         linesByOrientation[lineOrientation].push({'start': startPoint,
+        //             'end': turn.location, 'x': startPoint.x})
+        //         lineOrientation = 'vertical';
+        //     };
+        //     startPoint = turn.location;
+        //     console.log(linesByOrientation);
+        // })
 
         const lastTurn = this.turnHistory[this.turnHistory.length - 1];
 
@@ -207,6 +289,29 @@ class Player extends EventTarget {
         }
         
         return linesByOrientation;
+    }
+
+    checkLineIntersections() {
+        const linesDict = this.trackLines();
+
+        // going over each horizontal line and checking for
+        // intersection with vertical lines
+        // first, pull only the vertical lines with an x value that 
+        // is within your h-line's x range
+        // array.prototype.filter
+        // then, see if the v-line has a start point past the
+        // h-line's y value and an end point past it too
+        // return boolean - true if intersection
+        // call checkLineIntersections in checkCollisions
+
+        linesDict['horizontal'].forEach((horizontalLine) => {
+            const possibleIntersections = linesDict['vertical'].filter((line) => 
+                horizontalLine)
+
+            linesDict['vertical'].forEach((verticalLine) => {
+                
+            })
+        })
     }
 
     checkCollisions() {
@@ -245,5 +350,5 @@ const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
 
 window.addEventListener('DOMContentLoaded', () => {
     const new_client = new Client();
-    const new_local = new Local();
+    window.localGame = new Local();
 })
