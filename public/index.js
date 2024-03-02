@@ -108,6 +108,7 @@ class Player extends EventTarget {
             y: 200
         };
         this.initialPlayerPos = {...this.playerLocation};
+        this.initialPlayerDirection = 'right';
         this.playerDirection = 'right';
         this.playerSpeed = 300;
         this.turnHistory = [];
@@ -173,12 +174,6 @@ class Player extends EventTarget {
     }
 
     finishLine(endpoint, startTurn) {
-        // takes in end point
-        // look at last orientation
-        // if orientation was vertical, push an object into 
-        // vertical lines with x (startpoint.x), top y(whichever is 
-        // smaller, startpoint.y or endpoint.y), bottom y
-        // if horizontal, y, left x, right x
         let newLine = null;
         switch(startTurn.direction) {
             case 'up':
@@ -222,96 +217,69 @@ class Player extends EventTarget {
             default:
                 throw new Error('Ruh roh');
         }
-        console.log(`newLine = ${newLine}`);
-
         return newLine;
     }
 
     trackLines() {
-        const linesByOrientation = {'horizontal': [],
-            'vertical': []};
+
+        const orientationHistories = [...this.turnHistory]
 
         let startPoint = this.initialPlayerPos;
-        let lineOrientation = 'horizontal';
+        let lineOrientation = this.initialPlayerDirection;
 
-        const currentPosition = {...this.playerLocation};
+        const currentLocation = {...this.playerLocation};
 
-        if (this.turnHistory.length === 0) {
-            return linesByOrientation;
-        }
+        orientationHistories.unshift({'direction': lineOrientation, 
+            'location': startPoint})
+        
+        const finishLineParameters = []
 
-        // for each turn in turn history
-        // finish the line you were currently on
-        // using turn info, create a new start point for a new line
+        let newParameter = null;
 
+        let i = 0;
 
-
-        const startNewLine = (turn) => {
-            startPoint = turn.location;
-            if (turn.direction === 'right' || turn.direction === 'left') {
-                lineOrientation = 'horizontal';
+        while (i < orientationHistories.length) {
+            if (orientationHistories[i+1] == null) {
+                newParameter = {'startTurn': orientationHistories[i],
+                    'endPoint': currentLocation}
             }
             else {
-                lineOrientation = 'vertical';
+                newParameter = {'startTurn': orientationHistories[i],
+                'endPoint': orientationHistories[i+1].location}
             }
-        }
+            finishLineParameters.push(newParameter);
+            i += 1;
+        };
 
-        // in our turnHistory for each turn:
-        // ends current line
-        // starts new line based on current turn
-        // outside for each loop
-        // end current line again based on current player position
+        console.log(finishLineParameters);
 
-        // this.turnHistory.forEach((turn) => {
-        //     if (turn.direction === 'right' || turn.direction === 'left') {
-        //         linesByOrientation[lineOrientation].push({'start': startPoint,
-        //             'end': turn.location, 'y': startPoint.y});
-        //         lineOrientation = 'horizontal';
-        //     }
-        //     else {
-        //         linesByOrientation[lineOrientation].push({'start': startPoint,
-        //             'end': turn.location, 'x': startPoint.x})
-        //         lineOrientation = 'vertical';
-        //     };
-        //     startPoint = turn.location;
-        //     console.log(linesByOrientation);
-        // })
+        const lines = finishLineParameters.map((parameter) => {
+            return this.finishLine(parameter.endPoint, parameter.startTurn)
+        })
 
-        const lastTurn = this.turnHistory[this.turnHistory.length - 1];
-
-        if (lastTurn.direction === 'right' || lastTurn.direction === 'left') {
-            linesByOrientation['horizontal'].push({'start': startPoint,
-                'end': currentPosition})
-        }
-        else {
-            linesByOrientation['vertical'].push({'start': startPoint, 
-                'end': currentPosition})
-        }
-        
-        return linesByOrientation;
+        console.log(lines);
+        return lines;
     }
 
     checkLineIntersections() {
-        const linesDict = this.trackLines();
-
-        // going over each horizontal line and checking for
-        // intersection with vertical lines
-        // first, pull only the vertical lines with an x value that 
-        // is within your h-line's x range
-        // array.prototype.filter
-        // then, see if the v-line has a start point past the
-        // h-line's y value and an end point past it too
-        // return boolean - true if intersection
-        // call checkLineIntersections in checkCollisions
-
-        linesDict['horizontal'].forEach((horizontalLine) => {
-            const possibleIntersections = linesDict['vertical'].filter((line) => 
-                horizontalLine)
-
-            linesDict['vertical'].forEach((verticalLine) => {
-                
-            })
-        })
+        // use .pop to get last line
+        // iterate over each line and check for collision with
+        // last line
+        // checking for collisions depends on:
+        // vertical/vertical, horizontal/horizontal, vertical/horizontal
+        // steps:
+        // grab each line you're iterating over and check their orientations
+        // classify them based on that
+        // maybe create a javascript set and add each orientation to the set
+        // either get back "horizontal" if they're both horizontal, v if both v,
+        // horizontal + vertical if they don't match
+        // for horizontal + vertical case:
+            // is the vertical line horizontally within the left and right points?
+            // if vertical line's x value is between the horizontal line's 
+            // start and end points x value,
+            // and the horizontal line's y value is between the vertical's
+            // start and end y values,
+            // we know there's a collision
     }
 
     checkCollisions() {
