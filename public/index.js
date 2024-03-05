@@ -141,7 +141,6 @@ class Player extends EventTarget {
         }
 
         this.checkCollisions();
-        this.checkLineIntersections();
     }
 
     draw(ctx) {
@@ -320,13 +319,7 @@ class Player extends EventTarget {
             }
         })
 
-        // for horizontal + vertical case:
-            // is the vertical line horizontally within the left and right points?
-            // if vertical line's x value is between the horizontal line's 
-            // start and end points x value,
-            // and the horizontal line's y value is between the vertical's
-            // start and end y values,
-            // we know there's a collision
+        return collision;
     }
 
     checkCollisions() {
@@ -335,6 +328,10 @@ class Player extends EventTarget {
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
         };
+
+        if (this.checkLineIntersections()) {
+            this.dispatchEvent(new Event('collision'));
+        }
     }
 
     processCommand(command) {
