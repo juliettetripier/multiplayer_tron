@@ -190,8 +190,8 @@ class Player extends EventTarget {
                 };
                 newLine = {
                     'x': startTurn.location.x,
-                    'top y': topY,
-                    'bottom y': bottomY
+                    'topY': topY,
+                    'bottomY': bottomY
                 };
                 break;
             case 'left':
@@ -208,8 +208,8 @@ class Player extends EventTarget {
                 };
                 newLine = {
                     'y': startTurn.location.y,
-                    'left x': leftX,
-                    'right x': rightX
+                    'leftX': leftX,
+                    'rightX': rightX
                 };
                 break;
             default:
@@ -277,20 +277,43 @@ class Player extends EventTarget {
         };
     }
 
+    checkVerticalHorizontalIntersection(verticalLine, horizontalLine) {
+        if (verticalLine.x > horizontalLine.leftX && verticalLine.x < horizontalLine.rightX) {
+            if (horizontalLine.y > verticalLine.topY && horizontalLine.y < verticalLine.bottomY) {
+                return true;
+            };
+        };
+        return false;
+    }
+
     checkLineIntersections() {
         const lines = this.trackLines();
         const lastLine = lines.pop();
         const lastLineOrientation = this.grabLineOrientation(lastLine);
+        let collision = false;
         
         lines.forEach((line) => {
             const currentLineOrientation = this.grabLineOrientation(line);
             const pairing = this.categorizeLines(currentLineOrientation, lastLineOrientation);
+            let intersection = null;
             switch(pairing) {
                 case 'vertical':
                     break;
                 case 'horizontal':
                     break;
                 case 'vertical and horizontal':
+                    if (currentLineOrientation === 'vertical') {
+                        intersection = this.checkVerticalHorizontalIntersection(line, lastLine);
+                        if (intersection) {
+                            collision = true;
+                        };
+                    }
+                    else {
+                        intersection = this.checkVerticalHorizontalIntersection(lastLine, line);
+                        if (intersection) {
+                            collision = true;
+                        };
+                    };
                     break;
                 default:
                     throw new Error('Invalid pairing');
