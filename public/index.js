@@ -266,16 +266,25 @@ class Player extends EventTarget {
 
     categorizeLines(orientation1, orientation2) {
         const orientationSet = new Set();
+        orientationSet.add(orientation1);
+        orientationSet.add(orientation2);
 
+        if (orientationSet.size > 1) {
+            return 'vertical and horizontal';
+        }
+        else {
+            return orientation1;
+        };
     }
 
     checkLineIntersections() {
-        let lines = this.trackLines();
+        const lines = this.trackLines();
         const lastLine = lines.pop();
         const lastLineOrientation = this.grabLineOrientation(lastLine);
         
         lines.forEach((line) => {
             const currentLineOrientation = this.grabLineOrientation(line);
+            this.categorizeLines(currentLineOrientation, lastLineOrientation);
             
         })
 
