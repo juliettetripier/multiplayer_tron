@@ -284,21 +284,19 @@ class Player extends EventTarget {
         
         lines.forEach((line) => {
             const currentLineOrientation = this.grabLineOrientation(line);
-            this.categorizeLines(currentLineOrientation, lastLineOrientation);
-            
+            const pairing = this.categorizeLines(currentLineOrientation, lastLineOrientation);
+            switch(pairing) {
+                case 'vertical':
+                    break;
+                case 'horizontal':
+                    break;
+                case 'vertical and horizontal':
+                    break;
+                default:
+                    throw new Error('Invalid pairing');
+            }
         })
 
-        // use .pop to get last line
-        // iterate over each line and check for collision with
-        // last line
-        // checking for collisions depends on:
-        // vertical/vertical, horizontal/horizontal, vertical/horizontal
-        // steps:
-        // grab each line you're iterating over and check their orientations
-        // classify them based on that
-        // maybe create a javascript set and add each orientation to the set
-        // either get back "horizontal" if they're both horizontal, v if both v,
-        // horizontal + vertical if they don't match
         // for horizontal + vertical case:
             // is the vertical line horizontally within the left and right points?
             // if vertical line's x value is between the horizontal line's 
