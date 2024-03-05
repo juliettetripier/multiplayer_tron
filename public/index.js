@@ -141,7 +141,7 @@ class Player extends EventTarget {
         }
 
         this.checkCollisions();
-        this.trackLines();
+        this.checkLineIntersections();
     }
 
     draw(ctx) {
@@ -211,8 +211,6 @@ class Player extends EventTarget {
                     'left x': leftX,
                     'right x': rightX
                 };
-                console.log(`leftX = ${leftX}`);
-                console.log(`rightX = ${rightX}`);
                 break;
             default:
                 throw new Error('Ruh roh');
@@ -221,7 +219,6 @@ class Player extends EventTarget {
     }
 
     trackLines() {
-
         const orientationHistories = [...this.turnHistory]
 
         let startPoint = this.initialPlayerPos;
@@ -230,9 +227,9 @@ class Player extends EventTarget {
         const currentLocation = {...this.playerLocation};
 
         orientationHistories.unshift({'direction': lineOrientation, 
-            'location': startPoint})
+            'location': startPoint});
         
-        const finishLineParameters = []
+        const finishLineParameters = [];
 
         let newParameter = null;
 
@@ -251,17 +248,37 @@ class Player extends EventTarget {
             i += 1;
         };
 
-        console.log(finishLineParameters);
-
         const lines = finishLineParameters.map((parameter) => {
             return this.finishLine(parameter.endPoint, parameter.startTurn)
-        })
+        });
 
-        console.log(lines);
         return lines;
     }
 
+    grabLineOrientation(line) {
+        if (line.x) {
+            return 'vertical'
+        }
+        else {
+            return 'horizontal'
+        };
+    }
+
+    categorizeLines(orientation1, orientation2) {
+        const orientationSet = new Set();
+
+    }
+
     checkLineIntersections() {
+        let lines = this.trackLines();
+        const lastLine = lines.pop();
+        const lastLineOrientation = this.grabLineOrientation(lastLine);
+        
+        lines.forEach((line) => {
+            const currentLineOrientation = this.grabLineOrientation(line);
+            
+        })
+
         // use .pop to get last line
         // iterate over each line and check for collision with
         // last line
