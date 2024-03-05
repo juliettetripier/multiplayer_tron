@@ -294,13 +294,19 @@ class Player extends EventTarget {
         lines.forEach((line) => {
             const currentLineOrientation = this.grabLineOrientation(line);
             const pairing = this.categorizeLines(currentLineOrientation, lastLineOrientation);
-            let intersection = null;
             switch(pairing) {
                 case 'vertical':
+                    if (line.x === lastLine.x) {
+                        collision = true;
+                    };
                     break;
                 case 'horizontal':
+                    if (line.y === lastLine.y) {
+                        collision = true;
+                    }
                     break;
                 case 'vertical and horizontal':
+                    let intersection = null;
                     if (currentLineOrientation === 'vertical') {
                         intersection = this.checkVerticalHorizontalIntersection(line, lastLine);
                         if (intersection) {
@@ -318,7 +324,6 @@ class Player extends EventTarget {
                     throw new Error('Invalid pairing');
             }
         })
-
         return collision;
     }
 
