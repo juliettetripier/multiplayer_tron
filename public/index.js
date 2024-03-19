@@ -76,7 +76,7 @@ class Local {
     }
 
     endGame() {
-
+        console.log('test');
     }
 
     gameLoop() {
