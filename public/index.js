@@ -13,11 +13,15 @@ const ARENASIZES = {
 
 class Client {
     constructor() {
-        const ui = document.querySelector('#ui');
+        this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
 
-        ws.addEventListener('message', (event) => {
-            ui.innerText = event.data;
+        this.ws.addEventListener('message', (event) => {
+            console.log(event);
         })
+    }
+
+    startAIGame() {
+        this.ws.send('message');
     }
 }
 
@@ -407,8 +411,6 @@ class Player extends EventTarget {
         }
     }
 }
-
-const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
 
 window.addEventListener('DOMContentLoaded', () => {
     const new_client = new Client();
