@@ -61,6 +61,7 @@ class Local {
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
         this.newClient.addEventListener('ready', () => {
+            console.log('got the ready message');
             this.newClient.startAIGame();
         });
         (gameState[this.currentState])();
