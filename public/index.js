@@ -26,10 +26,11 @@ class Client {
 }
 
 class Local {
-    constructor() {
+    constructor(newClient) {
         this.currentState = GAMESTATES.gameActive;
         this.gameActiveState = null;
         this.gameOverState = null;
+        this.newClient = newClient;
         this.initializeGame();
     }
 
@@ -53,6 +54,7 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
+        this.newClient.startAIGame();
         (gameState[this.currentState])();
     }
 }
@@ -414,5 +416,5 @@ class Player extends EventTarget {
 
 window.addEventListener('DOMContentLoaded', () => {
     const new_client = new Client();
-    window.localGame = new Local();
+    window.localGame = new Local(new_client);
 })
