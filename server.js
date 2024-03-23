@@ -24,7 +24,7 @@ fastify.register(async function (fastify) {
     connection.socket.on('message', message => {
       // message.toString() === 'hi from client'
       console.log('Message received');
-      console.log(message);
+      console.log(message.toString());
       console.log(state)
       state += 1;
       clients.forEach((client) => {
@@ -34,6 +34,7 @@ fastify.register(async function (fastify) {
     })
     connection.socket.onmessage('AI game please', () => {
       const newAIGame = new AIGame(connection);
+      console.log(newAIGame);
     })
   })
 })
