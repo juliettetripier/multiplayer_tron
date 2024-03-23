@@ -63,7 +63,7 @@ class Local {
         console.log(this);
         this.newClient.addEventListener('ready', () => {
             this.newClient.startAIGame();
-        })
+        });
         (gameState[this.currentState])();
     }
 }
