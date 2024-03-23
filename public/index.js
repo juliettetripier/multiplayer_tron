@@ -112,7 +112,6 @@ class GameActiveState extends EventTarget {
         this.entities.forEach((entity) => entity.update());
         this.entities.forEach((entity) => entity.draw(this.ctx));
         window.requestAnimationFrame(() => this.gameLoop());
-        console.log('drawing stuff');
     }
 
     loseGame() {
@@ -129,7 +128,6 @@ class GameOverState extends EventTarget {
     }
 
     setUp() {
-        console.log('setup called');
         this.ctx.clearRect(0, 0, ARENASIZES.width, ARENASIZES.height);
         this.gameLoop();
     }
