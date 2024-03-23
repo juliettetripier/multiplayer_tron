@@ -11,10 +11,13 @@ const ARENASIZES = {
 
 
 
-class Client {
+class Client extends EventTarget {
     constructor() {
+        super();
         this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
-
+        this.ws.addEventListener('open', () => {
+            this.dispatchEvent(new Event('open'));
+        })
         this.ws.addEventListener('message', (event) => {
             console.log(event);
         })
@@ -54,7 +57,9 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
-        this.newClient.startAIGame();
+        this.newClient.ws.addEventListener('open', () => {
+            this.newClient.startAIGame();
+        })
         (gameState[this.currentState])();
     }
 }
