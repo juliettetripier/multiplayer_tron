@@ -1,4 +1,5 @@
 const GAMESTATES = {
+    gameStart: 'gameStart',
     gameActive: 'gameActive',
     gameOver: 'gameOver'
 };
@@ -12,23 +13,61 @@ const ARENASIZES = {
 
 class Client {
     constructor() {
-        const ui = document.querySelector('#ui');
+        this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
 
-        ws.addEventListener('message', (event) => {
-            ui.innerText = event.data;
+        this.ws.addEventListener('message', (event) => {
+            console.log(event);
         })
+    }
+
+    startAIGame() {
+        this.ws.send('message');
     }
 }
 
 class Local {
-    constructor() {
-        this.entities = [];
+    constructor(newClient) {
         this.currentState = GAMESTATES.gameActive;
+        this.gameActiveState = null;
+        this.gameOverState = null;
+        this.newClient = newClient;
         this.initializeGame();
     }
 
-    installEventHandlers() {
-        document.addEventListener('keydown', (event) => {
+    initializeGame() {
+        this.canvas = document.querySelector('#main-canvas');
+        this.canvas.setAttribute('width', ARENASIZES.width);
+        this.canvas.setAttribute('height', ARENASIZES.height);
+        this.ctx = this.canvas.getContext('2d');
+        this.gameOverState = new GameOverState(() => this.gameLoop(), this.canvas, this.ctx);
+        this.gameActiveState = new GameActiveState(() => this.gameLoop(), this.canvas, this.ctx);
+        this.gameActiveState.addEventListener('lose game', () => {
+            this.gameActiveState.tearDown();
+            this.currentState = GAMESTATES.gameOver;
+            this.gameOverState.setUp();
+        })
+        this.gameActiveState.setUp();
+    }
+
+    gameLoop() {
+        const gameState = {
+            [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
+            [GAMESTATES.gameOver]: () => this.gameOverState.tick()
+        };
+        this.newClient.startAIGame();
+        (gameState[this.currentState])();
+    }
+}
+
+class GameActiveState extends EventTarget {
+    constructor(gameLoop, canvas, ctx) {
+        super();
+        this.gameLoop = gameLoop;
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.entities = [];
+        this.eventHandler = null;
+        this.keyHandler = (event) => {
             if (event.key == 'ArrowUp') {
                 this.mainPlayer.processCommand('turnUp');
             } 
@@ -41,15 +80,14 @@ class Local {
             else if (event.key == 'ArrowRight') {
                 this.mainPlayer.processCommand('turnRight');
             }
-        });
-        this.mainPlayer.addEventListener('collision', () => this.loseGame());
+        };
     }
 
-    initializeGame() {
-        this.canvas = document.querySelector('#main-canvas');
-        this.canvas.setAttribute('width', ARENASIZES.width);
-        this.canvas.setAttribute('height', ARENASIZES.height);
-        this.ctx = this.canvas.getContext('2d');
+    addEntity(entity) {
+        this.entities.push(entity);
+    }
+
+    setUp() {
         const background = new Background();
         this.addEntity(background);
         const player = new Player();
@@ -59,8 +97,14 @@ class Local {
         this.gameLoop();
     }
 
-    addEntity(entity) {
-        this.entities.push(entity);
+    installEventHandlers() {
+        document.addEventListener('keydown', this.keyHandler);
+        this.mainPlayer.addEventListener('collision', () => this.loseGame());
+    }
+
+    tearDown() {
+        document.removeEventListener('keydown', this.keyHandler);
+        this.entities = [];
     }
 
     tick() {
@@ -71,20 +115,25 @@ class Local {
     }
 
     loseGame() {
-        this.currentState = GAMESTATES.gameOver;
-        console.log(this.currentState);
+        this.dispatchEvent(new Event('lose game'))
+    }
+}
+
+class GameOverState extends EventTarget {
+    constructor(gameLoop, canvas, ctx) {
+        super();
+        this.gameLoop = gameLoop;
+        this.canvas = canvas;
+        this.ctx = ctx;
     }
 
-    endGame() {
-
+    setUp() {
+        this.ctx.clearRect(0, 0, ARENASIZES.width, ARENASIZES.height);
+        this.gameLoop();
     }
 
-    gameLoop() {
-        const gameState = {
-            [GAMESTATES.gameActive]: () => this.tick(),
-            [GAMESTATES.gameOver]: () => this.endGame()
-        };
-        (gameState[this.currentState])();
+    tick() {
+        console.log('game over');
     }
 }
 
@@ -363,9 +412,7 @@ class Player extends EventTarget {
     }
 }
 
-const ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
-
 window.addEventListener('DOMContentLoaded', () => {
     const new_client = new Client();
-    window.localGame = new Local();
+    window.localGame = new Local(new_client);
 })
