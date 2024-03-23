@@ -25,6 +25,10 @@ fastify.register(async function (fastify) {
     connection.socket.on('message', message => {
       // message.toString() === 'hi from client'
       console.log('Message received');
+      if (message.toString() === 'AI game please') {
+        const newAIGame = new AIGame(connection);
+        console.log(newAIGame);
+      };
       console.log(message.toString());
       console.log(state);
       state += 1;
