@@ -16,7 +16,7 @@ class Client extends EventTarget {
         super();
         this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
         this.ws.addEventListener('open', () => {
-            this.dispatchEvent(new Event('open'));
+            this.dispatchEvent(new Event('ready'));
         })
         this.ws.addEventListener('message', (event) => {
             console.log(event);
@@ -34,7 +34,6 @@ class Local {
         this.gameActiveState = null;
         this.gameOverState = null;
         this.newClient = newClient;
-        console.log(`newClient ws: ${this.newClient.ws}`);
         this.initializeGame();
     }
 
@@ -58,7 +57,7 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
-        this.newClient.ws.addEventListener('open', () => {
+        this.newClient.addEventListener('ready', () => {
             this.newClient.startAIGame();
         })
         (gameState[this.currentState])();
