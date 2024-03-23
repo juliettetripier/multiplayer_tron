@@ -33,7 +33,9 @@ class Local {
         this.currentState = GAMESTATES.gameActive;
         this.gameActiveState = null;
         this.gameOverState = null;
+        console.log(`parameter is ${newClient}`);
         this.newClient = newClient;
+        console.log(`this.newClient is ${this.newClient}`);
         this.initializeGame();
     }
 
