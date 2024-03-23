@@ -25,6 +25,7 @@ class Client extends EventTarget {
 
     startAIGame() {
         this.ws.send('AI game please');
+        console.log('sent message');
     }
 }
 
