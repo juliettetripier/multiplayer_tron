@@ -52,6 +52,9 @@ class Local {
             this.gameOverState.setUp();
         })
         this.gameActiveState.setUp();
+        this.newClient.addEventListener('ready', () => {
+            this.newClient.startAIGame();
+        })
     }
 
     gameLoop() {
@@ -59,9 +62,6 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
-        this.newClient.addEventListener('ready', () => {
-            this.newClient.startAIGame();
-        })
         (gameState[this.currentState])();
     }
 }
