@@ -44,17 +44,15 @@ class Local {
         this.canvas.setAttribute('width', ARENASIZES.width);
         this.canvas.setAttribute('height', ARENASIZES.height);
         this.ctx = this.canvas.getContext('2d');
-        this.gameOverState = new GameOverState(() => this.gameLoop(), this.canvas, this.ctx);
-        this.gameActiveState = new GameActiveState(() => this.gameLoop(), this.canvas, this.ctx);
+        this.boundGameLoop = this.gameLoop.bind(this);
+        this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
+        this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
             this.currentState = GAMESTATES.gameOver;
             this.gameOverState.setUp();
         })
         this.gameActiveState.setUp();
-        this.newClient.addEventListener('ready', () => {
-            this.newClient.startAIGame();
-        })
     }
 
     gameLoop() {
@@ -62,6 +60,9 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
+        this.newClient.addEventListener('ready', () => {
+            this.newClient.startAIGame();
+        })
         (gameState[this.currentState])();
     }
 }
