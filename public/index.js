@@ -34,6 +34,7 @@ class Local {
         this.gameActiveState = null;
         this.gameOverState = null;
         this.newClient = newClient;
+        console.log(`newClient ws: ${this.newClient.ws}`);
         this.initializeGame();
     }
 
@@ -57,7 +58,6 @@ class Local {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
             [GAMESTATES.gameOver]: () => this.gameOverState.tick()
         };
-        console.log(`newClient ws: ${this.newClient.ws}`);
         this.newClient.ws.addEventListener('open', () => {
             this.newClient.startAIGame();
         })
