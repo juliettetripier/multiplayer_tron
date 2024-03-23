@@ -30,15 +30,15 @@ fastify.register(async function (fastify) {
       state += 1;
       clients.forEach((client) => {
         client.socket.send(state);
-      })
+      });
       // connection.socket.send(state);
-    })
-    connection.socket.onmessage('AI game please', () => {
-      const newAIGame = new AIGame(connection);
-      console.log(newAIGame);
-    })
-  })
-})
+    });
+    // connection.socket.onmessage('AI game please', () => {
+    //   const newAIGame = new AIGame(connection);
+    //   console.log(newAIGame);
+    // });
+  });
+});
 
 class AIGame {
   constructor(client) {
@@ -48,7 +48,7 @@ class AIGame {
   sendMessage() {
     this.client.socket.send('start AI game');
   }
-}
+};
 
 // ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
 
