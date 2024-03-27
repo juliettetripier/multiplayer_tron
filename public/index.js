@@ -31,7 +31,8 @@ class Client extends EventTarget {
 
 class Local {
     constructor(newClient) {
-        this.currentState = GAMESTATES.gameActive;
+        this.currentState = GAMESTATES.gameStart;
+        this.gameStartState = null;
         this.gameActiveState = null;
         this.gameOverState = null;
         console.log(`parameter is ${newClient}`);
@@ -46,20 +47,28 @@ class Local {
         this.canvas.setAttribute('height', ARENASIZES.height);
         this.ctx = this.canvas.getContext('2d');
         this.boundGameLoop = this.gameLoop.bind(this);
+        this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
+        this.gameStartState.addEventListener('start game', () => {
+            console.log('start game');
+            this.gameStartState.tearDown();
+            this.currentState = GAMESTATES.gameActive;
+            this.gameActiveState.setUp();
+        });
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
             this.currentState = GAMESTATES.gameOver;
             this.gameOverState.setUp();
-        })
-        this.gameActiveState.setUp();
+        });
+        this.gameStartState.setUp();
     }
 
     gameLoop() {
         const gameState = {
             [GAMESTATES.gameActive]: () => this.gameActiveState.tick(),
-            [GAMESTATES.gameOver]: () => this.gameOverState.tick()
+            [GAMESTATES.gameOver]: () => this.gameOverState.tick(),
+            [GAMESTATES.gameStart]: () => this.gameStartState.tick(),
         };
         this.newClient.addEventListener('ready', () => {
             console.log('got the ready message');
@@ -67,6 +76,42 @@ class Local {
         });
         (gameState[this.currentState])();
     }
+}
+
+class GameStartState extends EventTarget {
+    constructor(gameLoop, canvas, ctx) {
+        super();
+        this.gameLoop = gameLoop;
+        this.canvas = canvas;
+        this.ctx = ctx;
+        this.overlay = document.getElementById('overlay');
+        this.startButton = document.getElementById('start-game-button');
+        this.boundStartGame = this.startGame.bind(this);
+    }
+
+    setUp() {
+        this.overlay.style.display = 'block';
+        this.installEventHandlers();
+        this.gameLoop();
+    }
+
+    installEventHandlers() {
+        this.startButton.addEventListener('click', this.boundStartGame);
+    }
+
+    tearDown() {
+        this.startButton.removeEventListener('click', this.boundStartGame);
+        this.overlay.style.display = 'none';
+    }
+
+    startGame() {
+        this.dispatchEvent(new Event('start game'));
+    }
+
+    tick() {
+        console.log('whee');
+    }
+
 }
 
 class GameActiveState extends EventTarget {
@@ -125,7 +170,7 @@ class GameActiveState extends EventTarget {
     }
 
     loseGame() {
-        this.dispatchEvent(new Event('lose game'))
+        this.dispatchEvent(new Event('lose game'));
     }
 }
 
