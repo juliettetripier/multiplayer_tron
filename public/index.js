@@ -51,7 +51,6 @@ class Local {
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameStartState.addEventListener('start game', () => {
-            console.log('start game');
             this.gameStartState.tearDown();
             this.currentState = GAMESTATES.gameActive;
             this.gameActiveState.setUp();
@@ -61,6 +60,11 @@ class Local {
             this.currentState = GAMESTATES.gameOver;
             this.gameOverState.setUp();
         });
+        this.gameOverState.addEventListener('show start menu', () => {
+            this.gameOverState.tearDown();
+            this.currentState = GAMESTATES.gameStart;
+            this.gameStartState.setUp();
+        })
         this.gameStartState.setUp();
     }
 
@@ -84,7 +88,7 @@ class GameStartState extends EventTarget {
         this.gameLoop = gameLoop;
         this.canvas = canvas;
         this.ctx = ctx;
-        this.overlay = document.getElementById('overlay');
+        this.overlay = document.getElementById('start-game-overlay');
         this.startButton = document.getElementById('start-game-button');
         this.boundStartGame = this.startGame.bind(this);
     }
@@ -109,7 +113,7 @@ class GameStartState extends EventTarget {
     }
 
     tick() {
-        console.log('whee');
+    
     }
 
 }
@@ -180,15 +184,33 @@ class GameOverState extends EventTarget {
         this.gameLoop = gameLoop;
         this.canvas = canvas;
         this.ctx = ctx;
+        this.overlay = document.getElementById('end-game-overlay');
+        this.menuButton = document.getElementById('back-to-menu-button');
+        this.boundReturnToMenu = this.returnToMenu.bind(this);
     }
 
     setUp() {
         this.ctx.clearRect(0, 0, ARENASIZES.width, ARENASIZES.height);
+        this.installEventHandlers();
+        this.overlay.style.display = 'block';
         this.gameLoop();
+    }
+
+    installEventHandlers() {
+        this.menuButton.addEventListener('click', this.boundReturnToMenu);
     }
 
     tick() {
         console.log('game over');
+    }
+
+    returnToMenu() {
+        this.dispatchEvent(new Event('show start menu'));
+    }
+
+    tearDown() {
+        this.overlay.style.display = 'none';
+        this.menuButton.removeEventListener('click', this.boundReturnToMenu);
     }
 }
 

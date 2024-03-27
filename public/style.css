@@ -12,7 +12,7 @@ body {
   position: relative;
 }
 
-#overlay {
+.overlay {
   position: absolute;
   display: none;
 }
