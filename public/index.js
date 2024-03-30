@@ -147,7 +147,7 @@ class GameActiveState extends EventTarget {
         this.addEntity(background);
         const player = new Player();
         this.mainPlayer = player;
-        const opponent = new Player({'x': 580, 'y': 400}, 'left');
+        const opponent = new Player({'x': 580, 'y': 400}, 'left', '#bd4545');
         this.opponent = opponent;
         this.addEntity(player);
         this.addEntity(opponent);
@@ -220,7 +220,7 @@ class Background {
     draw(ctx) {
         ctx.beginPath();
         ctx.rect(0,0,ARENASIZES.width,ARENASIZES.height);
-        ctx.fillStyle = 'indigo';
+        ctx.fillStyle = '#20073a';
         ctx.fill();
         ctx.closePath();
     }
@@ -229,7 +229,7 @@ class Background {
 }
 
 class Player extends EventTarget {
-    constructor(playerLocation, initialPlayerDirection='right') {
+    constructor(playerLocation, initialPlayerDirection='right', color='#f5da45') {
         super();
         if (playerLocation == null) {
             this.playerLocation = {
@@ -244,6 +244,7 @@ class Player extends EventTarget {
         this.initialPlayerDirection = initialPlayerDirection;
         this.playerDirection = this.initialPlayerDirection;
         this.playerSpeed = 300;
+        this.color = color;
         this.opponent = null;
         this.turnHistory = [];
         this.lastUpdated = null;
@@ -284,7 +285,7 @@ class Player extends EventTarget {
     draw(ctx) {
         ctx.beginPath();
         ctx.arc(this.playerLocation.x, this.playerLocation.y, 10, 0, Math.PI * 2);
-        ctx.fillStyle = 'yellow';
+        ctx.fillStyle = this.color;
         ctx.fill();
         this.drawTrail(ctx);
         ctx.closePath();
@@ -296,7 +297,7 @@ class Player extends EventTarget {
             ctx.lineTo(turn.location.x, turn.location.y);
         })
         ctx.lineTo(this.playerLocation.x, this.playerLocation.y);
-        ctx.strokeStyle = 'yellow';
+        ctx.strokeStyle = this.color;
         ctx.lineWidth = 10;
         ctx.stroke();
     }
