@@ -51,6 +51,7 @@ class Local {
             this.gameStartState.tearDown();
             this.currentState = GAMESTATES.gameActive;
             this.gameActiveState.setUp();
+            this.newClient.startAIGame();
         });
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
@@ -71,9 +72,6 @@ class Local {
             [GAMESTATES.gameOver]: () => this.gameOverState.tick(),
             [GAMESTATES.gameStart]: () => this.gameStartState.tick(),
         };
-        this.newClient.addEventListener('ready', () => {
-            this.newClient.startAIGame();
-        });
         (gameState[this.currentState])();
     }
 }
