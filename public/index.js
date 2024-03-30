@@ -486,6 +486,7 @@ class Player extends EventTarget {
         };
 
         // check for collisions with opponent
+        console.log(this.opponent);
         if (this.opponent != null) {
             const opponentLines = this.opponent.trackLines();
             if (this.checkLineIntersections(opponentLines)) {
