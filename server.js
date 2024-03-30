@@ -44,14 +44,30 @@ fastify.register(async function (fastify) {
   });
 });
 
+const sleep = (delayMS) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve();
+    }, delayMS);
+  });
+}
+
 class AIGame {
   constructor(client) {
     this.client = client;
-    this.sendMessage();
+    this.runAI();
   }
-  sendMessage() {
-    this.client.socket.send('start AI game');
+
+  sendMessage(command) {
+    this.client.socket.send(command);
   }
+
+  async runAI() {
+    await sleep(1000);
+    this.sendMessage('turnUp');
+  }
+
+
 };
 
 // ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
