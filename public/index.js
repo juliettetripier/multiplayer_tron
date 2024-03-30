@@ -19,12 +19,15 @@ class Client extends EventTarget {
             this.dispatchEvent(new Event('ready'));
         })
         this.ws.addEventListener('message', (event) => {
-            console.log(event);
+            if (event.data === 'turnUp') {
+                this.dispatchEvent(new Event(event.data));
+            }
         })
     }
 
     startAIGame() {
         this.ws.send('AI game please');
+        console.log('sent AI game');
     }
 }
 
@@ -44,6 +47,10 @@ class Local {
         this.canvas.setAttribute('height', ARENASIZES.height);
         this.ctx = this.canvas.getContext('2d');
         this.boundGameLoop = this.gameLoop.bind(this);
+        this.newClient.addEventListener('turnUp', () => {
+            console.log('turning up');
+            this.gameActiveState.opponent.processCommand('turnUp');
+        });
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
