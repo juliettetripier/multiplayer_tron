@@ -155,6 +155,7 @@ class GameActiveState extends EventTarget {
         this.opponent = opponent;
         this.addEntity(player);
         this.addEntity(opponent);
+        player.addOpponent(opponent);
         this.installEventHandlers();
         this.gameLoop();
     }
