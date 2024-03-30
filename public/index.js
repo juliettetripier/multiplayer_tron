@@ -25,7 +25,6 @@ class Client extends EventTarget {
 
     startAIGame() {
         this.ws.send('AI game please');
-        console.log('sent message');
     }
 }
 
@@ -35,9 +34,7 @@ class Local {
         this.gameStartState = null;
         this.gameActiveState = null;
         this.gameOverState = null;
-        console.log(`parameter is ${newClient}`);
         this.newClient = newClient;
-        console.log(`this.newClient is ${this.newClient}`);
         this.initializeGame();
     }
 
@@ -75,7 +72,6 @@ class Local {
             [GAMESTATES.gameStart]: () => this.gameStartState.tick(),
         };
         this.newClient.addEventListener('ready', () => {
-            console.log('got the ready message');
             this.newClient.startAIGame();
         });
         (gameState[this.currentState])();
@@ -156,6 +152,7 @@ class GameActiveState extends EventTarget {
         this.addEntity(player);
         this.addEntity(opponent);
         player.addOpponent(opponent);
+        opponent.addOpponent(player);
         this.installEventHandlers();
         this.gameLoop();
     }
@@ -163,6 +160,7 @@ class GameActiveState extends EventTarget {
     installEventHandlers() {
         document.addEventListener('keydown', this.keyHandler);
         this.mainPlayer.addEventListener('collision', () => this.loseGame());
+        this.opponent.addEventListener('collision', () => this.loseGame());
     }
 
     tearDown() {
@@ -205,7 +203,7 @@ class GameOverState extends EventTarget {
     }
 
     tick() {
-        console.log('game over');
+        
     }
 
     returnToMenu() {
@@ -487,7 +485,6 @@ class Player extends EventTarget {
         };
 
         // check for collisions with opponent
-        console.log(this.opponent);
         if (this.opponent != null) {
             const opponentLines = this.opponent.trackLines();
             if (this.checkLineIntersections(opponentLines)) {
