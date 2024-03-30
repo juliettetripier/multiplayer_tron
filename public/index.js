@@ -245,8 +245,13 @@ class Player extends EventTarget {
         this.initialPlayerDirection = initialPlayerDirection;
         this.playerDirection = this.initialPlayerDirection;
         this.playerSpeed = 300;
+        this.opponent = null;
         this.turnHistory = [];
         this.lastUpdated = null;
+    }
+
+    addOpponent(opponent) {
+        this.opponent = opponent;
     }
 
     update() {
@@ -419,9 +424,14 @@ class Player extends EventTarget {
         return false;
     }
 
-    checkLineIntersections() {
+    getLastLine() {
         const lines = this.trackLines();
-        const lastLine = lines.pop();
+        return lines.pop();
+    }
+
+    checkLineIntersections(lineHistory) {
+        const lines = lineHistory;
+        const lastLine = this.getLastLine();
         const lastLineOrientation = this.grabLineOrientation(lastLine);
         let collision = false;
         
@@ -462,15 +472,21 @@ class Player extends EventTarget {
     }
 
     checkCollisions() {
+        // check for collision with walls
         const currentLocation = {...this.playerLocation};
         if (currentLocation.x <= 0 || currentLocation.x >= ARENASIZES.width
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
         };
 
-        if (this.checkLineIntersections()) {
+        // check for collisions with our own tail
+        const playerLines = (this.trackLines().slice(0, -1));
+        if (this.checkLineIntersections(playerLines)) {
             this.dispatchEvent(new Event('collision'));
-        }
+        };
+
+        // check for collisions with opponent
+        // if (this.checkLineIntersections())
     }
 
     processCommand(command) {
