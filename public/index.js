@@ -151,7 +151,10 @@ class GameActiveState extends EventTarget {
         this.addEntity(background);
         const player = new Player();
         this.mainPlayer = player;
+        const opponent = new Player({'x': 580, 'y': 400}, 'left');
+        this.opponent = opponent;
         this.addEntity(player);
+        this.addEntity(opponent);
         this.installEventHandlers();
         this.gameLoop();
     }
@@ -227,15 +230,20 @@ class Background {
 }
 
 class Player extends EventTarget {
-    constructor() {
+    constructor(playerLocation, initialPlayerDirection='right') {
         super();
-        this.playerLocation = {
-            x: 20,
-            y: 200
-        };
+        if (playerLocation == null) {
+            this.playerLocation = {
+                x: 20,
+                y: 200
+            };
+        }
+        else {
+            this.playerLocation = playerLocation;
+        }
         this.initialPlayerPos = {...this.playerLocation};
-        this.initialPlayerDirection = 'right';
-        this.playerDirection = 'right';
+        this.initialPlayerDirection = initialPlayerDirection;
+        this.playerDirection = this.initialPlayerDirection;
         this.playerSpeed = 300;
         this.turnHistory = [];
         this.lastUpdated = null;
