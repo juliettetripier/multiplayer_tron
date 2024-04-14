@@ -97,12 +97,15 @@ class GameStartState extends EventTarget {
         this.canvas = canvas;
         this.ctx = ctx;
         this.overlay = document.getElementById('start-game-overlay');
+        this.overlay.style.width = `${ARENASIZES.width}px`;
+        this.overlay.style.height = `${ARENASIZES.height}px`;
         this.startButton = document.getElementById('start-game-button');
         this.boundStartGame = this.startGame.bind(this);
     }
 
     setUp() {
-        this.overlay.style.display = 'block';
+        this.overlay.className = 'startGame overlay';
+        this.startButton.className = 'startScreenButton';
         this.installEventHandlers();
         this.gameLoop();
     }
@@ -113,7 +116,7 @@ class GameStartState extends EventTarget {
 
     tearDown() {
         this.startButton.removeEventListener('click', this.boundStartGame);
-        this.overlay.style.display = 'none';
+        this.overlay.className = 'overlay';
     }
 
     startGame() {
@@ -214,14 +217,15 @@ class GameOverState extends EventTarget {
         this.installEventHandlers();
         this.overlay.style.width = `${ARENASIZES.width}px`;
         this.overlay.style.height = `${ARENASIZES.height}px`;
-        this.overlay.style.display = 'block';
         switch (this.winner) {
             case('player'):
-                this.overlay.style.backgroundColor = 'yellow';
+                this.overlay.className = 'gameWon overlay';
+                this.menuButton.className = 'winScreenButton';
                 this.endScreenMessage.innerText = "You won!";
                 break;
             case('opponent'):
-                this.overlay.style.backgroundColor = 'red';
+                this.overlay.className = 'gameLost overlay';
+                this.menuButton.className = 'loseScreenButton';
                 this.endScreenMessage.innerText = "You lose!";
                 break;
             default:
@@ -248,7 +252,7 @@ class GameOverState extends EventTarget {
     }
 
     tearDown() {
-        this.overlay.style.display = 'none';
+        this.overlay.className = 'overlay';
         this.menuButton.removeEventListener('click', this.boundReturnToMenu);
     }
 }

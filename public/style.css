@@ -2,6 +2,34 @@ body {
   margin: 0;
 }
 
+@font-face {
+  font-family: 'pixelFont';
+  src: url('fonts/PressStart2P-Regular.ttf');
+}
+
+h1 {
+  font-family: 'pixelFont';
+}
+
+button {
+  font-family: 'pixelFont';
+  padding: 20px;
+  background-color: transparent;
+  border: 4px solid;
+}
+
+.startScreenButton {
+  color: #f5da45;
+}
+
+.winScreenButton {
+  color: #20073a;
+}
+
+.loseScreenButton {
+  color: #20073a
+}
+
 .background {
   min-height: 100vh;
   width: 100%;
@@ -15,4 +43,40 @@ body {
 .overlay {
   position: absolute;
   display: none;
+}
+
+.startGame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #20073a;
+}
+
+.startGame h1 {
+  color: #f5da45;
+}
+
+.gameWon {
+  background-color: #f5da45;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.gameWon h1 {
+  color: #20073a;
+}
+
+.gameLost {
+  background-color: #bd4545;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.gameLost h1 {
+  color: #20073a;
 }
