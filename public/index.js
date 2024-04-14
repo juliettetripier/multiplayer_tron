@@ -63,8 +63,15 @@ class Local {
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
             this.currentState = GAMESTATES.gameOver;
+            this.gameOverState.determineWinner('opponent');
             this.gameOverState.setUp();
         });
+        this.gameActiveState.addEventListener('win game', () => {
+            this.gameActiveState.tearDown();
+            this.currentState = GAMESTATES.gameOver;
+            this.gameOverState.determineWinner('player');
+            this.gameOverState.setUp();
+        })
         this.gameOverState.addEventListener('show start menu', () => {
             this.gameOverState.tearDown();
             this.currentState = GAMESTATES.gameStart;
@@ -165,7 +172,7 @@ class GameActiveState extends EventTarget {
     installEventHandlers() {
         document.addEventListener('keydown', this.keyHandler);
         this.mainPlayer.addEventListener('collision', () => this.loseGame());
-        this.opponent.addEventListener('collision', () => this.loseGame());
+        this.opponent.addEventListener('collision', () => this.winGame());
     }
 
     tearDown() {
@@ -183,6 +190,10 @@ class GameActiveState extends EventTarget {
     loseGame() {
         this.dispatchEvent(new Event('lose game'));
     }
+
+    winGame() {
+        this.dispatchEvent(new Event('win game'));
+    }
 }
 
 class GameOverState extends EventTarget {
@@ -192,14 +203,31 @@ class GameOverState extends EventTarget {
         this.canvas = canvas;
         this.ctx = ctx;
         this.overlay = document.getElementById('end-game-overlay');
+        this.endScreenMessage = document.getElementById('win-or-lose');
         this.menuButton = document.getElementById('back-to-menu-button');
         this.boundReturnToMenu = this.returnToMenu.bind(this);
+        this.winner = null;
     }
 
     setUp() {
         this.ctx.clearRect(0, 0, ARENASIZES.width, ARENASIZES.height);
         this.installEventHandlers();
+        this.overlay.style.width = `${ARENASIZES.width}px`;
+        this.overlay.style.height = `${ARENASIZES.height}px`;
         this.overlay.style.display = 'block';
+        switch (this.winner) {
+            case('player'):
+                this.overlay.style.backgroundColor = 'yellow';
+                this.endScreenMessage.innerText = "You won!";
+                break;
+            case('opponent'):
+                this.overlay.style.backgroundColor = 'red';
+                this.endScreenMessage.innerText = "You lose!";
+                break;
+            default:
+                this.endScreenMessage.innerText = "Game over";
+                break;
+        }
         this.gameLoop();
     }
 
@@ -209,6 +237,10 @@ class GameOverState extends EventTarget {
 
     tick() {
         
+    }
+
+    determineWinner(player) {
+        this.winner = player;
     }
 
     returnToMenu() {
