@@ -2,17 +2,18 @@ body {
   margin: 0;
 }
 
-@font-face {
-  font-family: 'pixelFont';
-  src: url('fonts/PressStart2P-Regular.ttf');
+.press-start-2p-regular {
+  font-family: "Press Start 2P", system-ui;
+  font-weight: 400;
+  font-style: normal;
 }
 
 h1 {
-  font-family: 'pixelFont';
+  font-family: 'Press Start 2P';
 }
 
 button {
-  font-family: 'pixelFont';
+  font-family: 'Press Start 2P';
   padding: 20px;
   background-color: transparent;
   border: 4px solid;
@@ -22,12 +23,24 @@ button {
   color: #f5da45;
 }
 
+.startScreenButton:hover {
+  background-color: #bd4545;
+}
+
 .winScreenButton {
   color: #20073a;
 }
 
+.winScreenButton:hover {
+  background-color: #839aed;
+}
+
 .loseScreenButton {
   color: #20073a
+}
+
+.loseScreenButton:hover {
+  background-color: #f5da45;
 }
 
 .background {
