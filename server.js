@@ -71,13 +71,13 @@ class Lobby {
       const ID = this.currentID;
       this.runningGames[ID] = newGame;
       // event listeners to prevent memory leak
-      newGame.addEventListener('complete', () => {
+      newGame.on('complete', () => {
         delete this.runningGames[ID];
       });
-      newGame.addEventListener('expired', () => {
+      newGame.on('expired', () => {
         delete this.runningGames[ID];
       });
-      newGame.addEventListener('closed', () => {
+      newGame.on('closed', () => {
         delete this.runningGames[ID];
       });
       this.currentID += 1;
