@@ -21,6 +21,7 @@ button {
 
 .startScreenButton {
   color: #f5da45;
+  margin-bottom: 20px;
 }
 
 .startScreenButton:hover {
@@ -32,7 +33,7 @@ button {
 }
 
 .winScreenButton:hover {
-  background-color: #839aed;
+  background-color: #bd4545;
 }
 
 .loseScreenButton {

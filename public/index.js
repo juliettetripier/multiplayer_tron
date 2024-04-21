@@ -99,23 +99,25 @@ class GameStartState extends EventTarget {
         this.overlay = document.getElementById('start-game-overlay');
         this.overlay.style.width = `${ARENASIZES.width}px`;
         this.overlay.style.height = `${ARENASIZES.height}px`;
-        this.startButton = document.getElementById('start-game-button');
+        this.startSoloButton = document.getElementById('start-solo-button');
+        this.startMultiButton = document.getElementById('start-multi-button');
         this.boundStartGame = this.startGame.bind(this);
     }
 
     setUp() {
         this.overlay.className = 'startGame overlay';
-        this.startButton.className = 'startScreenButton';
+        this.startSoloButton.className = 'startScreenButton';
+        this.startMultiButton.className = 'startScreenButton';
         this.installEventHandlers();
         this.gameLoop();
     }
 
     installEventHandlers() {
-        this.startButton.addEventListener('click', this.boundStartGame);
+        this.startSoloButton.addEventListener('click', this.boundStartGame);
     }
 
     tearDown() {
-        this.startButton.removeEventListener('click', this.boundStartGame);
+        this.startSoloButton.removeEventListener('click', this.boundStartGame);
         this.overlay.className = 'overlay';
     }
 

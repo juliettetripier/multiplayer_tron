@@ -35,12 +35,7 @@ fastify.register(async function (fastify) {
       clients.forEach((client) => {
         client.socket.send(state);
       });
-      // connection.socket.send(state);
     });
-    // connection.socket.onmessage('AI game please', () => {
-    //   const newAIGame = new AIGame(connection);
-    //   console.log(newAIGame);
-    // });
   });
 });
 
