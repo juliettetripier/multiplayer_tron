@@ -5,6 +5,8 @@
 
 const path = require("path");
 
+const EventEmitter = require('node:events');
+
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
   // Set this to true for detailed logging:
@@ -89,13 +91,19 @@ class Lobby {
   }
 }
 
-class MultiplayerGame {
+class MultiplayerGame extends EventEmitter {
   constructor(client1, client2) {
-    
+    super();
+    this.client1 = client1;
+    this.client2 = client2;
+  }
+
+  startGame() {
+    this.client1.sendMessage('game ready');
+    this.client2.sendMessage('game ready');
   }
 }
 
-// ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
 
 // Setup our static files
 fastify.register(require("@fastify/static"), {
