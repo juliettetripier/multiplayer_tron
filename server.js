@@ -17,9 +17,6 @@ fastify.register(require('@fastify/websocket'));
 fastify.register(async function (fastify) {
   const lobby = new Lobby();
   fastify.get('/wss', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
-    clients.add(connection);
-    console.log(`added connection ${connection}`);
-    connection.socket.send(state);
     connection.socket.on('message', message => {
       console.log('Message received');
       if (message.toString() === 'AI game please') {
