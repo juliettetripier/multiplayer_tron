@@ -31,7 +31,6 @@ class Client extends EventTarget {
 
     startMultiplayerGame() {
         this.ws.send('multiplayer game please');
-        console.log('sent multiplayer game');
     }
 }
 
@@ -52,7 +51,6 @@ class Local {
         this.ctx = this.canvas.getContext('2d');
         this.boundGameLoop = this.gameLoop.bind(this);
         this.newClient.addEventListener('turnUp', () => {
-            console.log('turning up');
             this.gameActiveState.opponent.processCommand('turnUp');
         });
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
