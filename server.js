@@ -99,8 +99,8 @@ class MultiplayerGame extends EventEmitter {
 
   startGame() {
     console.log('starting game');
-    this.client1.sendMessage('game ready');
-    this.client2.sendMessage('game ready');
+    this.client1.socket.send('game ready');
+    this.client2.socket.send('game ready');
   }
 }
 
