@@ -19,6 +19,7 @@ class Client extends EventTarget {
             this.dispatchEvent(new Event('ready'));
         })
         this.ws.addEventListener('message', (event) => {
+            console.log(event.data);
             if (event.data === 'turnUp') {
                 this.dispatchEvent(new Event(event.data));
             }
@@ -53,6 +54,9 @@ class Local {
         this.newClient.addEventListener('turnUp', () => {
             this.gameActiveState.opponent.processCommand('turnUp');
         });
+        this.newClient.addEventListener('game ready', () => {
+            console.log('game is ready');
+        })
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
