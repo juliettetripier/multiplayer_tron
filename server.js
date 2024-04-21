@@ -68,6 +68,7 @@ class Lobby {
   }
 
   handleConnection(connection) {
+    console.log('handling connection');
     if (this.waitingPlayer) {
       const newGame = new MultiplayerGame(connection, this.waitingPlayer);
       const ID = this.currentID;
@@ -99,6 +100,7 @@ class MultiplayerGame extends EventEmitter {
   }
 
   startGame() {
+    console.log('starting game');
     this.client1.sendMessage('game ready');
     this.client2.sendMessage('game ready');
   }
