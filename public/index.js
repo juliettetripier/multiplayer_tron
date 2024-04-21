@@ -27,7 +27,11 @@ class Client extends EventTarget {
 
     startAIGame() {
         this.ws.send('AI game please');
-        console.log('sent AI game');
+    }
+
+    startMultiplayerGame() {
+        this.ws.send('multiplayer game please');
+        console.log('sent multiplayer game');
     }
 }
 
@@ -54,11 +58,17 @@ class Local {
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
-        this.gameStartState.addEventListener('start game', () => {
+        this.gameStartState.addEventListener('start AI game', () => {
             this.gameStartState.tearDown();
             this.currentState = GAMESTATES.gameActive;
             this.gameActiveState.setUp();
             this.newClient.startAIGame();
+        });
+        this.gameStartState.addEventListener('start multiplayer game', () => {
+            this.gameStartState.tearDown();
+            this.currentState = GAMESTATES.gameActive;
+            this.gameActiveState.setUp();
+            this.newClient.startMultiplayerGame();
         });
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
@@ -101,7 +111,8 @@ class GameStartState extends EventTarget {
         this.overlay.style.height = `${ARENASIZES.height}px`;
         this.startSoloButton = document.getElementById('start-solo-button');
         this.startMultiButton = document.getElementById('start-multi-button');
-        this.boundStartGame = this.startGame.bind(this);
+        this.boundStartAIGame = this.startAIGame.bind(this);
+        this.boundStartMultiplayerGame = this.startMultiplayerGame.bind(this);
     }
 
     setUp() {
@@ -113,16 +124,21 @@ class GameStartState extends EventTarget {
     }
 
     installEventHandlers() {
-        this.startSoloButton.addEventListener('click', this.boundStartGame);
+        this.startSoloButton.addEventListener('click', this.boundStartAIGame);
+        this.startMultiButton.addEventListener('click', this.boundStartMultiplayerGame);
     }
 
     tearDown() {
-        this.startSoloButton.removeEventListener('click', this.boundStartGame);
+        this.startSoloButton.removeEventListener('click', this.boundStartAIGame);
         this.overlay.className = 'overlay';
     }
 
-    startGame() {
-        this.dispatchEvent(new Event('start game'));
+    startAIGame() {
+        this.dispatchEvent(new Event('start AI game'));
+    }
+
+    startMultiplayerGame() {
+        this.dispatchEvent(new Event('start multiplayer game'));
     }
 
     tick() {
