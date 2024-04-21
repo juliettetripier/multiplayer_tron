@@ -11,30 +11,23 @@ const fastify = require("fastify")({
   logger: false,
 });
 
-const clients = new Set();
-
-// Instantiate state variable
-let state = 0;
-
 fastify.register(require('@fastify/websocket'));
 fastify.register(async function (fastify) {
+  const lobby = new Lobby();
   fastify.get('/wss', { websocket: true }, (connection /* SocketStream */, req /* FastifyRequest */) => {
     clients.add(connection);
     console.log(`added connection ${connection}`);
     connection.socket.send(state);
     connection.socket.on('message', message => {
-      // message.toString() === 'hi from client'
       console.log('Message received');
       if (message.toString() === 'AI game please') {
         const newAIGame = new AIGame(connection);
         console.log(newAIGame);
       };
+      if (message.toString() === 'multiplayer game please') {
+        
+      }
       console.log(message.toString());
-      console.log(state);
-      state += 1;
-      clients.forEach((client) => {
-        client.socket.send(state);
-      });
     });
   });
 });
@@ -64,6 +57,43 @@ class AIGame {
 
 
 };
+
+class Lobby {
+  constructor() {
+    this.waitingPlayer = null;
+    this.runningGames = {};
+    this.currentID = 0;
+  }
+
+  handleConnection(connection) {
+    if (this.waitingPlayer) {
+      const newGame = new MultiplayerGame(connection, this.waitingPlayer);
+      const ID = this.currentID;
+      this.runningGames[ID] = newGame;
+      // event listeners to prevent memory leak
+      newGame.addEventListener('complete', () => {
+        delete this.runningGames[ID];
+      });
+      newGame.addEventListener('expired', () => {
+        delete this.runningGames[ID];
+      });
+      newGame.addEventListener('closed', () => {
+        delete this.runningGames[ID];
+      });
+      this.currentID += 1;
+      this.waitingPlayer = null;
+    }
+    else {
+      this.waitingPlayer = connection;
+    }
+  }
+}
+
+class MultiplayerGame {
+  constructor(client1, client2) {
+    
+  }
+}
 
 // ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
 
