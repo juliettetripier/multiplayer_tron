@@ -21,6 +21,7 @@ button {
 
 .startScreenButton {
   color: #f5da45;
+  margin-bottom: 20px;
 }
 
 .startScreenButton:hover {
