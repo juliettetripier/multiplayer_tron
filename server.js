@@ -27,7 +27,7 @@ fastify.register(async function (fastify) {
         console.log(newAIGame);
       };
       if (message.toString() === 'multiplayer game please') {
-        
+        lobby.handleConnection(connection);
       }
       console.log(message.toString());
     });
