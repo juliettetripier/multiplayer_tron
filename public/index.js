@@ -63,7 +63,7 @@ class Local {
         })
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
-        this.gameActiveState = new GameActiveState(this.boundGameLoop, this.canvas, this.ctx);
+        this.gameActiveState = new GameActiveState(this.newClient, this.boundGameLoop, this.canvas, this.ctx);
         this.gameStartState.addEventListener('start AI game', () => {
             this.gameStartState.tearDown();
             this.currentState = GAMESTATES.gameActive;
@@ -164,8 +164,9 @@ class GameStartState extends EventTarget {
 }
 
 class GameActiveState extends EventTarget {
-    constructor(gameLoop, canvas, ctx) {
+    constructor(client, gameLoop, canvas, ctx) {
         super();
+        this.client = client;
         this.gameLoop = gameLoop;
         this.canvas = canvas;
         this.ctx = ctx;
@@ -173,15 +174,19 @@ class GameActiveState extends EventTarget {
         this.eventHandler = null;
         this.keyHandler = (event) => {
             if (event.key == 'ArrowUp') {
+                this.client.ws.send('playerTurnUp');
                 this.mainPlayer.processCommand('turnUp');
             } 
             else if (event.key == 'ArrowDown') {
+                this.client.ws.send('playerTurnDown');
                 this.mainPlayer.processCommand('turnDown');
             }
             else if (event.key == 'ArrowLeft') {
+                this.client.ws.send('playerTurnLeft');
                 this.mainPlayer.processCommand('turnLeft');
             }
             else if (event.key == 'ArrowRight') {
+                this.client.ws.send('playerTurnRight');
                 this.mainPlayer.processCommand('turnRight');
             }
         };
