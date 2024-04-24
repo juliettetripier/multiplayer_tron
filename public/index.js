@@ -15,12 +15,13 @@ class Client extends EventTarget {
     constructor() {
         super();
         this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
+        this.serverCommands = new Set(['turnUp', 'game ready'])
         this.ws.addEventListener('open', () => {
             this.dispatchEvent(new Event('ready'));
         })
         this.ws.addEventListener('message', (event) => {
             console.log(event.data);
-            if (event.data === 'turnUp') {
+            if (this.serverCommands.has(event.data)) {
                 this.dispatchEvent(new Event(event.data));
             }
         })
@@ -56,6 +57,9 @@ class Local {
         });
         this.newClient.addEventListener('game ready', () => {
             console.log('game is ready');
+            this.gameStartState.waitingRoomTeardown();
+            this.currentState = GAMESTATES.gameActive;
+            this.gameActiveState.setUp();
         })
         this.gameStartState = new GameStartState(this.boundGameLoop, this.canvas, this.ctx);
         this.gameOverState = new GameOverState(this.boundGameLoop, this.canvas, this.ctx);
@@ -68,9 +72,8 @@ class Local {
         });
         this.gameStartState.addEventListener('start multiplayer game', () => {
             this.gameStartState.tearDown();
-            this.currentState = GAMESTATES.gameActive;
-            this.gameActiveState.setUp();
             this.newClient.startMultiplayerGame();
+            this.gameStartState.showWaitingRoomOverlay();
         });
         this.gameActiveState.addEventListener('lose game', () => {
             this.gameActiveState.tearDown();
@@ -111,6 +114,9 @@ class GameStartState extends EventTarget {
         this.overlay = document.getElementById('start-game-overlay');
         this.overlay.style.width = `${ARENASIZES.width}px`;
         this.overlay.style.height = `${ARENASIZES.height}px`;
+        this.waitingRoomOverlay = document.getElementById('waiting-room-overlay');
+        this.waitingRoomOverlay.style.width = `${ARENASIZES.width}px`;
+        this.waitingRoomOverlay.style.height = `${ARENASIZES.height}px`;
         this.startSoloButton = document.getElementById('start-solo-button');
         this.startMultiButton = document.getElementById('start-multi-button');
         this.boundStartAIGame = this.startAIGame.bind(this);
@@ -141,6 +147,14 @@ class GameStartState extends EventTarget {
 
     startMultiplayerGame() {
         this.dispatchEvent(new Event('start multiplayer game'));
+    }
+
+    showWaitingRoomOverlay() {
+        this.waitingRoomOverlay.className = 'waitingRoom overlay';
+    }
+
+    waitingRoomTeardown() {
+        this.waitingRoomOverlay.className = 'overlay';
     }
 
     tick() {
