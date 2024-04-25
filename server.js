@@ -65,7 +65,6 @@ class Lobby {
   }
 
   handleConnection(connection) {
-    console.log('handling connection');
     if (this.waitingPlayer) {
       const newGame = new MultiplayerGame(connection, this.waitingPlayer);
       const ID = this.currentID;
@@ -103,8 +102,6 @@ class MultiplayerGame extends EventEmitter {
   installEventHandlers() {
     const playerMovesDict = {'playerTurnUp':'turnUp', 'playerTurnDown':'turnDown',
       'playerTurnLeft':'turnLeft', 'playerTurnRight':'turnRight'};
-    
-    console.log('installing event handlers');
 
     this.client1.socket.on('message', (message) => {
       if (playerMovesDict.hasOwnProperty(message)) {
@@ -122,7 +119,6 @@ class MultiplayerGame extends EventEmitter {
   }
 
   startGame() {
-    console.log('starting game');
     this.client1.socket.send('game ready');
     this.client2.socket.send('game ready');
   }
