@@ -15,7 +15,7 @@ class Client extends EventTarget {
     constructor() {
         super();
         this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
-        this.serverCommands = new Set(['turnUp', 'game ready'])
+        this.serverCommands = new Set(['turnUp', 'turnDown', 'turnLeft', 'turnRight', 'game ready'])
         this.ws.addEventListener('open', () => {
             this.dispatchEvent(new Event('ready'));
         })
@@ -43,6 +43,7 @@ class Local {
         this.gameActiveState = null;
         this.gameOverState = null;
         this.newClient = newClient;
+        this.opponentCommands = new Set(['turnUp', 'turnDown', 'turnLeft', 'turnRight']);
         this.initializeGame();
     }
 
@@ -52,8 +53,10 @@ class Local {
         this.canvas.setAttribute('height', ARENASIZES.height);
         this.ctx = this.canvas.getContext('2d');
         this.boundGameLoop = this.gameLoop.bind(this);
-        this.newClient.addEventListener('turnUp', () => {
-            this.gameActiveState.opponent.processCommand('turnUp');
+        this.opponentCommands.forEach(command => {
+            this.newClient.addEventListener(command, (event) => {
+                this.gameActiveState.opponent.processCommand(command);
+            });
         });
         this.newClient.addEventListener('game ready', () => {
             console.log('game is ready');
