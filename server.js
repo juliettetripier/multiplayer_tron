@@ -94,7 +94,29 @@ class MultiplayerGame extends EventEmitter {
     super();
     this.client1 = client1;
     this.client2 = client2;
+    this.installEventHandlers();
     this.startGame();
+
+    
+  }
+
+  installEventHandlers() {
+    const playerMovesDict = {'playerTurnUp':'turnUp', 'playerTurnDown':'turnDown',
+      'playerTurnLeft':'turnLeft', 'playerTurnRight':'turnRight'};
+    
+      this.client1.socket.on('message', (message) => {
+        if (playerMovesDict.hasOwnProperty(message)) {
+          console.log('got turn message from client 1');
+          this.client2.socket.send(playerMovesDict[message]);
+        }
+      })
+
+      this.client2.socket.on('message', (message) => {
+        if (playerMovesDict.hasOwnProperty(message)) {
+          console.log('got turn message from client 2');
+          this.client1.socket.send(playerMovesDict[message]);
+        }
+      })
   }
 
   startGame() {
