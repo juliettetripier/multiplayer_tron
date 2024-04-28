@@ -211,17 +211,21 @@ class GameActiveState extends EventTarget {
         player.addOpponent(opponent);
         opponent.addOpponent(player);
         this.installEventHandlers();
+        this.boundWinGame = this.winGame.bind(this);
+        this.boundLoseGame = this.loseGame.bind(this);
         this.gameLoop();
     }
 
     installEventHandlers() {
         document.addEventListener('keydown', this.keyHandler);
-        this.mainPlayer.addEventListener('collision', () => this.loseGame());
-        this.opponent.addEventListener('collision', () => this.winGame());
+        this.mainPlayer.addEventListener('collision', this.boundLoseGame);
+        this.opponent.addEventListener('collision', this.boundWinGame);
     }
 
     tearDown() {
         document.removeEventListener('keydown', this.keyHandler);
+        this.mainPlayer.removeEventListener('collision', this.boundLoseGame);
+        this.opponent.removeEventListener('collision', this.boundWinGame);
         this.entities = [];
     }
 
