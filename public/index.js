@@ -560,12 +560,14 @@ class Player extends EventTarget {
         if (currentLocation.x <= 0 || currentLocation.x >= ARENASIZES.width
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
+                console.log('collided with wall');
         };
 
         // check for collisions with our own tail
         const playerLines = (this.trackLines().slice(0, -1));
         if (this.checkLineIntersections(playerLines)) {
             this.dispatchEvent(new Event('collision'));
+            console.log('collided with own tail');
         };
 
         // check for collisions with opponent
@@ -573,6 +575,7 @@ class Player extends EventTarget {
             const opponentLines = this.opponent.trackLines();
             if (this.checkLineIntersections(opponentLines)) {
                 this.dispatchEvent(new Event('collision'));
+                console.log('collided with opponent');
             };
         }
     }
