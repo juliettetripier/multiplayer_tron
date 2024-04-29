@@ -83,12 +83,14 @@ class Local {
             this.gameStartState.showWaitingRoomOverlay();
         });
         this.gameActiveState.addEventListener('lose game', () => {
+            this.newClient.ws.send('game complete');
             this.gameActiveState.tearDown();
             this.currentState = GAMESTATES.gameOver;
             this.gameOverState.determineWinner('opponent');
             this.gameOverState.setUp();
         });
         this.gameActiveState.addEventListener('win game', () => {
+            this.newClient.ws.send('game complete');
             this.gameActiveState.tearDown();
             this.currentState = GAMESTATES.gameOver;
             this.gameOverState.determineWinner('player');
@@ -210,6 +212,8 @@ class GameActiveState extends EventTarget {
         this.mainPlayer = player;
         const opponent = new Player({'x': 580, 'y': 400}, 'left', '#bd4545');
         this.opponent = opponent;
+        console.log(`main player id ${player.playerID}`);
+        console.log(`main opponent id is ${opponent.playerID}`);
         this.addEntity(player);
         this.addEntity(opponent);
         player.addOpponent(opponent);

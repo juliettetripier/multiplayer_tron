@@ -86,6 +86,10 @@ class Lobby {
       this.waitingPlayer = connection;
     }
   }
+
+  endGame(connection) {
+
+  }
 }
 
 class MultiplayerGame extends EventEmitter {
@@ -95,8 +99,7 @@ class MultiplayerGame extends EventEmitter {
     this.client2 = client2;
     this.installEventHandlers();
     this.startGame();
-
-    
+    this.running = true;
   }
 
   installEventHandlers() {
@@ -108,12 +111,20 @@ class MultiplayerGame extends EventEmitter {
         console.log('got turn message from client 1');
         this.client2.socket.send(playerMovesDict[message]);
       }
+      else if (message === 'game complete' && this.running == true) {
+        this.emit('complete');
+        this.running = false;
+      }
     });
 
     this.client2.socket.on('message', (message) => {
       if (playerMovesDict.hasOwnProperty(message)) {
         console.log('got turn message from client 2');
         this.client1.socket.send(playerMovesDict[message]);
+      }
+      else if (message === 'game complete' && this.running == true) {
+        this.emit('complete');
+        this.running = false;
       }
     });
   }
