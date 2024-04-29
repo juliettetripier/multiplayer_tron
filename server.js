@@ -100,8 +100,8 @@ class MultiplayerGame extends EventEmitter {
   }
 
   installEventHandlers() {
-    const playerMovesDict = {'playerTurnUp':'turnUp', 'playerTurnDown':'turnDown',
-      'playerTurnLeft':'turnLeft', 'playerTurnRight':'turnRight'};
+    const playerMovesDict = {'playerTurnUp':'turnDown', 'playerTurnDown':'turnUp',
+      'playerTurnLeft':'turnRight', 'playerTurnRight':'turnLeft'};
 
     this.client1.socket.on('message', (message) => {
       if (playerMovesDict.hasOwnProperty(message)) {
