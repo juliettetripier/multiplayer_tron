@@ -9,6 +9,8 @@ const ARENASIZES = {
     height: 600
 };
 
+let playerID = 0;
+
 
 
 class Client extends EventTarget {
@@ -318,6 +320,8 @@ class Background {
 class Player extends EventTarget {
     constructor(playerLocation, initialPlayerDirection='right', color='#f5da45') {
         super();
+        this.playerID = playerID;
+        playerID += 1;
         if (playerLocation == null) {
             this.playerLocation = {
                 x: 20,
@@ -565,6 +569,7 @@ class Player extends EventTarget {
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
                 console.log('collided with wall');
+                console.log(`player id ${this.playerID}`);
         };
 
         // check for collisions with our own tail
@@ -572,6 +577,7 @@ class Player extends EventTarget {
         if (this.checkLineIntersections(playerLines)) {
             this.dispatchEvent(new Event('collision'));
             console.log('collided with own tail');
+            console.log(`player id ${this.playerID}`);
         };
 
         // check for collisions with opponent
@@ -580,6 +586,7 @@ class Player extends EventTarget {
             if (this.checkLineIntersections(opponentLines)) {
                 this.dispatchEvent(new Event('collision'));
                 console.log('collided with opponent');
+                console.log(`player id ${this.playerID}`);
             };
         }
     }
