@@ -69,19 +69,9 @@ class Lobby {
       const newGame = new MultiplayerGame(connection, this.waitingPlayer);
       const ID = this.currentID;
       this.runningGames[ID] = newGame;
-      console.log(`the current running game ID is ${this.currentID}`);
       // event listeners to prevent memory leak
       newGame.on('complete', () => {
-        let key;
-        for (let k in this.runningGames) {
-          if (this.runningGames[k] === newGame) {
-            console.log(k);
-          };
-        }
-        console.log(this.runningGames);
         delete this.runningGames[ID];
-        console.log('deleted game');
-        console.log(this.runningGames);
       });
       newGame.on('expired', () => {
         delete this.runningGames[ID];
@@ -113,28 +103,22 @@ class MultiplayerGame extends EventEmitter {
       'playerTurnLeft':'turnRight', 'playerTurnRight':'turnLeft'};
 
     this.client1.socket.on('message', (message) => {
-      if (playerMovesDict.hasOwnProperty(message)) {
-        console.log('got turn message from client 1');
+      if (playerMovesDict.hasOwnProperty(message) && this.running == true) {
         this.client2.socket.send(playerMovesDict[message]);
       }
       else if (message.toString() === 'game complete' && this.running == true) {
         this.running = false;
-        this.client1 = null;
-        this.client2 = null;
         this.emit('complete');
-        console.log('sent complete event');
       }
     });
 
     this.client2.socket.on('message', (message) => {
-      if (playerMovesDict.hasOwnProperty(message)) {
-        console.log('got turn message from client 2');
+      if (playerMovesDict.hasOwnProperty(message) && this.running == true) {
         this.client1.socket.send(playerMovesDict[message]);
       }
       else if (message === 'game complete' && this.running == true) {
         this.emit('complete');
         this.running = false;
-        console.log('sent complete event');
       }
     });
   }
