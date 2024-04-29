@@ -69,8 +69,15 @@ class Lobby {
       const newGame = new MultiplayerGame(connection, this.waitingPlayer);
       const ID = this.currentID;
       this.runningGames[ID] = newGame;
+      console.log(`the current running game ID is ${this.currentID}`);
       // event listeners to prevent memory leak
       newGame.on('complete', () => {
+        let key;
+        for (let k in this.runningGames) {
+          if (this.runningGames[k] === newGame) {
+            console.log(k);
+          };
+        }
         delete this.runningGames[ID];
         console.log('deleted game');
       });
