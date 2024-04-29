@@ -55,7 +55,9 @@ class Local {
         this.boundGameLoop = this.gameLoop.bind(this);
         this.opponentCommands.forEach(command => {
             this.newClient.addEventListener(command, (event) => {
-                this.gameActiveState.opponent.processCommand(command);
+                if (this.gameActiveState.opponent) {
+                    this.gameActiveState.opponent.processCommand(command);
+                }
             });
         });
         this.newClient.addEventListener('game ready', () => {
