@@ -78,8 +78,10 @@ class Lobby {
             console.log(k);
           };
         }
+        console.log(this.runningGames);
         delete this.runningGames[ID];
         console.log('deleted game');
+        console.log(this.runningGames);
       });
       newGame.on('expired', () => {
         delete this.runningGames[ID];
