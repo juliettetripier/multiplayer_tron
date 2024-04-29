@@ -108,6 +108,9 @@ class MultiplayerGame extends EventEmitter {
         console.log('got turn message from client 1');
         this.client2.socket.send(playerMovesDict[message]);
       }
+      else if (message === 'game complete') {
+        console.log('the game complete message is working');
+      }
       else if (message === 'game complete' && this.running == true) {
         this.emit('complete');
         this.running = false;
