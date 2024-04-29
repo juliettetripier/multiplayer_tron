@@ -72,6 +72,7 @@ class Lobby {
       // event listeners to prevent memory leak
       newGame.on('complete', () => {
         delete this.runningGames[ID];
+        console.log('deleted game');
       });
       newGame.on('expired', () => {
         delete this.runningGames[ID];
@@ -85,10 +86,6 @@ class Lobby {
     else {
       this.waitingPlayer = connection;
     }
-  }
-
-  endGame(connection) {
-
   }
 }
 
@@ -114,6 +111,7 @@ class MultiplayerGame extends EventEmitter {
       else if (message === 'game complete' && this.running == true) {
         this.emit('complete');
         this.running = false;
+        console.log('sent complete event');
       }
     });
 
@@ -125,6 +123,7 @@ class MultiplayerGame extends EventEmitter {
       else if (message === 'game complete' && this.running == true) {
         this.emit('complete');
         this.running = false;
+        console.log('sent complete event');
       }
     });
   }
