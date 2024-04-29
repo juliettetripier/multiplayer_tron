@@ -94,9 +94,9 @@ class MultiplayerGame extends EventEmitter {
     super();
     this.client1 = client1;
     this.client2 = client2;
+    this.running = true;
     this.installEventHandlers();
     this.startGame();
-    this.running = true;
   }
 
   installEventHandlers() {
