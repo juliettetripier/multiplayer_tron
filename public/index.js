@@ -212,8 +212,6 @@ class GameActiveState extends EventTarget {
         this.mainPlayer = player;
         const opponent = new Player({'x': 580, 'y': 400}, 'left', '#bd4545');
         this.opponent = opponent;
-        console.log(`main player id ${player.playerID}`);
-        console.log(`main opponent id is ${opponent.playerID}`);
         this.addEntity(player);
         this.addEntity(opponent);
         player.addOpponent(opponent);
@@ -337,7 +335,6 @@ class Player extends EventTarget {
         }
         this.initialPlayerPos = {...this.playerLocation};
         this.initialPlayerDirection = initialPlayerDirection;
-        this.playerStartTime = Date.now();
         this.playerDirection = this.initialPlayerDirection;
         this.playerSpeed = 300;
         this.color = color;
@@ -357,6 +354,8 @@ class Player extends EventTarget {
         }
         let deltaSeconds = delta / 1000;
         this.lastUpdated = Date.now();
+
+        const intersectedBefore = this.checkLineIntersections(this.opponent.trackLines());
         
         switch (this.playerDirection) {
             case 'right':
@@ -375,7 +374,13 @@ class Player extends EventTarget {
                 throw new Error('Invalid direction');
         }
 
-        this.checkCollisions();
+        const intersectedAfter = this.checkLineIntersections(this.opponent.trackLines());
+        const collidedWithOpponent = !intersectedBefore && intersectedAfter;
+        if (collidedWithOpponent) {
+            this.dispatchEvent(new Event('collision'));
+        }
+
+        this.checkCollisionsWithWallsAndSelf();
     }
 
     draw(ctx) {
@@ -403,14 +408,12 @@ class Player extends EventTarget {
         const newTurn = {
             direction: this.playerDirection,
             location: currentLocation,
-            time: Date.now()
         };
         this.turnHistory.push(newTurn);
     }
 
-    finishLine(endpoint, startTurn, startTime, direction) {
+    finishLine(endpoint, startTurn) {
         let newLine = null;
-        const playerMoving = direction;
         switch(startTurn.direction) {
             case 'up':
             case 'down':
@@ -419,21 +422,15 @@ class Player extends EventTarget {
                 if (startTurn.location.y > endpoint.y) {
                     topY = endpoint.y;
                     bottomY = startTurn.location.y;
-                    startTime = startTime;
                 }
                 else {
                     topY = startTurn.location.y;
                     bottomY = endpoint.y;
-                    startTime = startTime;
                 };
                 newLine = {
                     'x': startTurn.location.x,
                     'topY': topY,
                     'bottomY': bottomY,
-                    'startTime': startTime,
-                    'playerMoving': playerMoving,
-                    'startPoint': startTurn.location,
-                    'endPoint': endpoint,
                 };
                 break;
             case 'left':
@@ -443,21 +440,15 @@ class Player extends EventTarget {
                 if (startTurn.location.x > endpoint.x) {
                     leftX = endpoint.x;
                     rightX = startTurn.location.x;
-                    startTime = startTime;
                 }
                 else {
                     leftX = startTurn.location.x;
                     rightX = endpoint.x;
-                    startTime = startTime;
                 };
                 newLine = {
                     'y': startTurn.location.y,
                     'leftX': leftX,
                     'rightX': rightX,
-                    'startTime': startTime,
-                    'playerMoving': playerMoving,
-                    'startPoint': startTurn.location,
-                    'endPoint': endpoint,
                 };
                 break;
             default:
@@ -471,12 +462,11 @@ class Player extends EventTarget {
 
         let startPoint = this.initialPlayerPos;
         let lineOrientation = this.initialPlayerDirection;
-        let startTime = this.playerStartTime;
 
         const currentLocation = {...this.playerLocation};
 
         orientationHistories.unshift({'direction': lineOrientation, 
-            'location': startPoint, 'time': startTime});
+            'location': startPoint});
         
         const finishLineParameters = [];
 
@@ -489,16 +479,12 @@ class Player extends EventTarget {
                 newParameter = {
                     'startTurn': orientationHistories[i],
                     'endPoint': currentLocation, 
-                    'startTime': orientationHistories[i].time,
-                    'playerMoving': orientationHistories[i].direction,
                 }
             }
             else {
                 newParameter = {
                     'startTurn': orientationHistories[i],
                     'endPoint': orientationHistories[i+1].location, 
-                    'startTime': orientationHistories[i].time,
-                    'playerMoving': orientationHistories[i].direction,
                 }
             };
             finishLineParameters.push(newParameter);
@@ -506,9 +492,9 @@ class Player extends EventTarget {
         };
 
         const lines = finishLineParameters.map((parameter) => {
-            return this.finishLine(parameter.endPoint, parameter.startTurn, parameter.startTime, parameter.playerMoving);
+            return this.finishLine(parameter.endPoint, parameter.startTurn);
         });
-        console.log(lines);
+        
         return lines;
     }
 
@@ -544,7 +530,10 @@ class Player extends EventTarget {
     }
     
     findIntersectionPoint(line1, line2) {
+        if (line1.startPoint.x === line1.endPoint.x) {
+            // Line 1 is vertical
 
+        }
     }
 
     getLastLine() {
@@ -594,43 +583,18 @@ class Player extends EventTarget {
         return collision;
     }
 
-    crashedFirst() {
-        // when one player's last line intersects with another player's last line,
-        // determine which player crashed by identifying who was there last
-        let crashedFirst = false;
-        // take each player's last line
-        // we know where the crash occurred based on where the last lines intersect
-        // then, we need to figure out what time each player was at that point
-        // we can do this with the turn start location and player speed
-        // whoever was at that point last was the one who crashed
-    }
-
-    checkCollisions() {
+    checkCollisionsWithWallsAndSelf() {
         // check for collision with walls
         const currentLocation = {...this.playerLocation};
         if (currentLocation.x <= 0 || currentLocation.x >= ARENASIZES.width
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
-                console.log('collided with wall');
-                console.log(`player id ${this.playerID}`);
         };
 
         // check for collisions with our own tail
         const playerLines = (this.trackLines().slice(0, -1));
         if (this.checkLineIntersections(playerLines)) {
             this.dispatchEvent(new Event('collision'));
-            console.log('collided with own tail');
-            console.log(`player id ${this.playerID}`);
-        };
-
-        // check for collisions with opponent
-        if (this.opponent != null) {
-            const opponentLines = this.opponent.trackLines();
-            if (this.checkLineIntersections(opponentLines)) {
-                this.dispatchEvent(new Event('collision'));
-                console.log('collided with opponent');
-                console.log(`player id ${this.playerID}`);
-            };
         };
     }
 
