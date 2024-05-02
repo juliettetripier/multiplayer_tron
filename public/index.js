@@ -403,7 +403,7 @@ class Player extends EventTarget {
         })
         ctx.lineTo(this.playerLocation.x, this.playerLocation.y);
         ctx.strokeStyle = this.color;
-        ctx.lineWidth = 10;
+        ctx.lineWidth = 5;
         ctx.stroke();
     }
 
@@ -532,13 +532,6 @@ class Player extends EventTarget {
         };
         return false;
     }
-    
-    findIntersectionPoint(line1, line2) {
-        if (line1.startPoint.x === line1.endPoint.x) {
-            // Line 1 is vertical
-
-        }
-    }
 
     getLastLine() {
         const lines = this.trackLines();
@@ -609,20 +602,28 @@ class Player extends EventTarget {
     processCommand(command) {
         switch(command) {
             case 'turnUp':
-                this.playerDirection = 'up';
-                this.registerTurn();
+                if (this.playerDirection != 'up') {
+                    this.playerDirection = 'up';
+                    this.registerTurn();
+                };
                 break;
             case 'turnDown':
-                this.playerDirection = 'down';
-                this.registerTurn();
+                if (this.playerDirection != 'down') {
+                    this.playerDirection = 'down';
+                    this.registerTurn();
+                };
                 break;
             case 'turnLeft':
-                this.playerDirection = 'left';
-                this.registerTurn();
+                if (this.playerDirection != 'left') {
+                    this.playerDirection = 'left';
+                    this.registerTurn();
+                };
                 break;
             case 'turnRight':
-                this.playerDirection = 'right';
-                this.registerTurn();
+                if (this.playerDirection != 'right') {
+                    this.playerDirection = 'right';
+                    this.registerTurn();
+                };
                 break;
             default:
                 throw new Error('Invalid direction uh oh');
