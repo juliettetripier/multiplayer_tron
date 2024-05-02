@@ -337,6 +337,7 @@ class Player extends EventTarget {
         }
         this.initialPlayerPos = {...this.playerLocation};
         this.initialPlayerDirection = initialPlayerDirection;
+        this.PlayerStartTime = Date.now();
         this.playerDirection = this.initialPlayerDirection;
         this.playerSpeed = 300;
         this.color = color;
@@ -401,12 +402,13 @@ class Player extends EventTarget {
         const currentLocation = {...this.playerLocation};
         const newTurn = {
             direction: this.playerDirection,
-            location: currentLocation
+            location: currentLocation,
+            time: Date.now()
         };
         this.turnHistory.push(newTurn);
     }
 
-    finishLine(endpoint, startTurn) {
+    finishLine(endpoint, startTurn, startTime) {
         let newLine = null;
         switch(startTurn.direction) {
             case 'up':
@@ -416,15 +418,18 @@ class Player extends EventTarget {
                 if (startTurn.location.y > endpoint.y) {
                     topY = endpoint.y;
                     bottomY = startTurn.location.y;
+                    startTime = startTime;
                 }
                 else {
                     topY = startTurn.location.y;
                     bottomY = endpoint.y;
+                    startTime = startTime;
                 };
                 newLine = {
                     'x': startTurn.location.x,
                     'topY': topY,
-                    'bottomY': bottomY
+                    'bottomY': bottomY,
+                    'startTime': startTime,
                 };
                 break;
             case 'left':
@@ -434,15 +439,18 @@ class Player extends EventTarget {
                 if (startTurn.location.x > endpoint.x) {
                     leftX = endpoint.x;
                     rightX = startTurn.location.x;
+                    startTime = startTime;
                 }
                 else {
                     leftX = startTurn.location.x;
                     rightX = endpoint.x;
+                    startTime = startTime;
                 };
                 newLine = {
                     'y': startTurn.location.y,
                     'leftX': leftX,
-                    'rightX': rightX
+                    'rightX': rightX,
+                    'startTime': startTime,
                 };
                 break;
             default:
@@ -456,11 +464,12 @@ class Player extends EventTarget {
 
         let startPoint = this.initialPlayerPos;
         let lineOrientation = this.initialPlayerDirection;
+        let startTime = this.PlayerStartTime;
 
         const currentLocation = {...this.playerLocation};
 
         orientationHistories.unshift({'direction': lineOrientation, 
-            'location': startPoint});
+            'location': startPoint, 'time': startTime});
         
         const finishLineParameters = [];
 
@@ -471,18 +480,18 @@ class Player extends EventTarget {
         while (i < orientationHistories.length) {
             if (orientationHistories[i+1] == null) {
                 newParameter = {'startTurn': orientationHistories[i],
-                    'endPoint': currentLocation}
+                    'endPoint': currentLocation, 'startTime': orientationHistories[i].time}
             }
             else {
                 newParameter = {'startTurn': orientationHistories[i],
-                'endPoint': orientationHistories[i+1].location}
-            }
+                'endPoint': orientationHistories[i+1].location, 'startTime': orientationHistories[i].time}
+            };
             finishLineParameters.push(newParameter);
             i += 1;
         };
 
         const lines = finishLineParameters.map((parameter) => {
-            return this.finishLine(parameter.endPoint, parameter.startTurn)
+            return this.finishLine(parameter.endPoint, parameter.startTurn, parameter.startTime);
         });
 
         return lines;
@@ -566,6 +575,12 @@ class Player extends EventTarget {
         return collision;
     }
 
+    identifyWhoCrashed() {
+        // when one player's last line intersects with another player's last line,
+        // determine which player crashed by identifying who was there last
+
+    }
+
     checkCollisions() {
         // check for collision with walls
         const currentLocation = {...this.playerLocation};
@@ -592,7 +607,7 @@ class Player extends EventTarget {
                 console.log('collided with opponent');
                 console.log(`player id ${this.playerID}`);
             };
-        }
+        };
     }
 
     processCommand(command) {
