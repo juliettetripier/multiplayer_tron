@@ -212,6 +212,8 @@ class GameActiveState extends EventTarget {
         this.mainPlayer = player;
         const opponent = new Player({'x': 580, 'y': 400}, 'left', '#bd4545');
         this.opponent = opponent;
+        console.log(`main player id ${player.playerID}`);
+        console.log(`main opponent id is ${opponent.playerID}`);
         this.addEntity(player);
         this.addEntity(opponent);
         player.addOpponent(opponent);
@@ -378,6 +380,8 @@ class Player extends EventTarget {
         const collidedWithOpponent = !intersectedBefore && intersectedAfter;
         if (collidedWithOpponent) {
             this.dispatchEvent(new Event('collision'));
+            console.log('collided with opponent');
+            console.log(`player id ${this.playerID}`);
         }
 
         this.checkCollisionsWithWallsAndSelf();
@@ -589,12 +593,16 @@ class Player extends EventTarget {
         if (currentLocation.x <= 0 || currentLocation.x >= ARENASIZES.width
             || currentLocation.y <= 0 || currentLocation.y >= ARENASIZES.height) {
                 this.dispatchEvent(new Event('collision'));
+                console.log('collided with walls');
+                console.log(`player id ${this.playerID}`);
         };
 
         // check for collisions with our own tail
         const playerLines = (this.trackLines().slice(0, -1));
         if (this.checkLineIntersections(playerLines)) {
             this.dispatchEvent(new Event('collision'));
+            console.log('collided with self');
+            console.log(`player id ${this.playerID}`);
         };
     }
 
