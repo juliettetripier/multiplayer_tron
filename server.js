@@ -66,14 +66,15 @@ class Lobby {
 
   handleConnection(connection) {
     if (this.waitingPlayer) {
+      console.log('making match');
       const newGame = new MultiplayerGame(connection, this.waitingPlayer);
       const ID = this.currentID;
       this.runningGames[ID] = newGame;
-      // event listeners to prevent memory leak
       newGame.on('complete', () => {
         delete this.runningGames[ID];
       });
       this.currentID += 1;
+      this.waitingPlayer.gameStarted = true;
       this.waitingPlayer = null;
     }
     else {
