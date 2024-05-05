@@ -67,7 +67,7 @@ class Lobby {
   handleConnection(connection) {
     if (this.waitingPlayer) {
       console.log('making match');
-      const newGame = new MultiplayerGame(connection, this.waitingPlayer);
+      const newGame = new MultiplayerGame(connection, this.waitingPlayer.client);
       const ID = this.currentID;
       this.runningGames[ID] = newGame;
       newGame.on('complete', () => {
