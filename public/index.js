@@ -17,13 +17,14 @@ class Client extends EventTarget {
     constructor() {
         super();
         this.ws = new WebSocket('wss://poised-brook-chartreuse.glitch.me/wss');
-        this.serverCommands = new Set(['turnUp', 'turnDown', 'turnLeft', 'turnRight', 'game ready'])
+        this.serverCommands = new Set(['turnUp', 'turnDown', 'turnLeft', 'turnRight', 'game ready', 'expired']);
         this.ws.addEventListener('open', () => {
             this.dispatchEvent(new Event('ready'));
         })
         this.ws.addEventListener('message', (event) => {
             console.log(event.data);
             if (this.serverCommands.has(event.data)) {
+                console.log('event dispatched');
                 this.dispatchEvent(new Event(event.data));
             }
         })
@@ -78,10 +79,12 @@ class Local {
             this.newClient.startAIGame();
         });
         this.gameStartState.addEventListener('start multiplayer game', () => {
-            this.gameStartState.tearDown();
             this.newClient.startMultiplayerGame();
-            this.gameStartState.showWaitingRoomOverlay();
         });
+        this.newClient.addEventListener('expired', () => {
+            console.log('got expired event');
+            this.gameStartState.returnToMenu();
+        })
         this.gameActiveState.addEventListener('lose game', () => {
             this.newClient.ws.send('game complete');
             this.gameActiveState.tearDown();
@@ -128,6 +131,7 @@ class GameStartState extends EventTarget {
         this.waitingRoomOverlay.style.height = `${ARENASIZES.height}px`;
         this.startSoloButton = document.getElementById('start-solo-button');
         this.startMultiButton = document.getElementById('start-multi-button');
+        this.expiredMessage = document.getElementById('game-expired-message');
         this.boundStartAIGame = this.startAIGame.bind(this);
         this.boundStartMultiplayerGame = this.startMultiplayerGame.bind(this);
     }
@@ -148,6 +152,7 @@ class GameStartState extends EventTarget {
     tearDown() {
         this.startSoloButton.removeEventListener('click', this.boundStartAIGame);
         this.overlay.className = 'overlay';
+        this.expiredMessage.style.display = 'none';
     }
 
     startAIGame() {
@@ -155,6 +160,8 @@ class GameStartState extends EventTarget {
     }
 
     startMultiplayerGame() {
+        this.overlay.className = 'overlay';
+        this.showWaitingRoomOverlay();
         this.dispatchEvent(new Event('start multiplayer game'));
     }
 
@@ -164,6 +171,12 @@ class GameStartState extends EventTarget {
 
     waitingRoomTeardown() {
         this.waitingRoomOverlay.className = 'overlay';
+    }
+
+    returnToMenu() {
+        this.waitingRoomTeardown();
+        this.overlay.className = 'startGame overlay';
+        this.expiredMessage.style.display = 'block';
     }
 
     tick() {

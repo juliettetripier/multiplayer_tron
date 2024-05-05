@@ -100,7 +100,7 @@ class WaitingPlayer extends EventEmitter {
   }
 
   async setExpirationTimer() {
-    await sleep(3000);
+    await sleep(300000);
     if (this.gameStarted === false) {
       console.log('expiration timer ran out');
       this.emit('expired');
