@@ -73,18 +73,42 @@ class Lobby {
       newGame.on('complete', () => {
         delete this.runningGames[ID];
       });
-      newGame.on('expired', () => {
-        delete this.runningGames[ID];
-      });
-      newGame.on('closed', () => {
-        delete this.runningGames[ID];
-      });
       this.currentID += 1;
       this.waitingPlayer = null;
     }
     else {
-      this.waitingPlayer = connection;
+      this.waitingPlayer = new WaitingPlayer(connection);
+      this.waitingPlayer.on('expired', () => {
+        console.log('lobby got expired message');
+        this.waitingPlayer.gameExpired();
+        this.waitingPlayer = null;
+      });
+      this.waitingPlayer.on('closed', () => {
+        
+      });
+
     }
+  }
+}
+
+class WaitingPlayer extends EventEmitter {
+  constructor(client) {
+    super();
+    this.client = client;
+    this.gameStarted = false;
+    this.setExpirationTimer();
+  }
+
+  async setExpirationTimer() {
+    await sleep(3000);
+    if (this.gameStarted === false) {
+      console.log('expiration timer ran out');
+      this.sendMessage('expired');
+    }
+  }
+
+  gameExpired() {
+    this.client.socket.send('expired');
   }
 }
 
